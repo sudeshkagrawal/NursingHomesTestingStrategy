@@ -3,17 +3,21 @@ package network;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphTests;
 import org.jgrapht.Graphs;
+import org.jgrapht.generate.CompleteGraphGenerator;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultUndirectedGraph;
+import org.jgrapht.util.SupplierUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Represents a network graph.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 8, 2020.
+ * Last Updated: October 9, 2020.
  */
 public class graph
 {
@@ -66,6 +70,47 @@ public class graph
 	}
 	
 	/**
+	 * Returns a string representation of the object.
+	 *
+	 * @return a string representation of the object.
+	 */
+	@Override
+	public String toString()
+	{
+		return networkName+": g<"+g.vertexSet()+", "+g.edgeSet()+">";
+	}
+	
+	/**
+	 * Indicates whether some other object is "equal to" this one.
+	 * Used guidelines at <a href="http://www.technofundo.com/tech/java/equalhash.html" target="_blank">
+	 *     "Equals and Hash Code"</a>.
+	 *
+	 * @param o the reference object with which to compare.
+	 * @return {@code true} if this object is the same as the obj argument; {@code false} otherwise.
+	 */
+	@Override
+	public boolean equals(Object o)
+	{
+		// this instance check
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		graph graph = (graph) o;
+		return this.g.equals(graph.g) &&
+				networkName.equals(graph.networkName);
+	}
+	
+	/**
+	 * Returns a hash code value for the object.
+	 *
+	 * @return a hash code value for this object.
+	 */
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(this.g, networkName);
+	}
+	
+	/**
 	 * Build network graph {@link graph#g} from a text file.
 	 * Each line in the text file is an edge, where the vertices are separated by commas.
 	 *
@@ -75,7 +120,7 @@ public class graph
 	 */
 	public void buildGraphFromFile(String filename, String separator) throws Exception
 	{
-		if (this.g.vertexSet().size()>0)
+		if ((!this.g.vertexSet().isEmpty()) && (this.g.vertexSet().size()>0))
 		{
 			throw new Exception("Graph is not empty!");
 		}
@@ -106,6 +151,74 @@ public class graph
 			}
 		}
 		
+	}
+	
+	/**
+	 * Initialize {@link graph#g}, assumed to be empty, with a complete graph of given size.
+	 * <br>
+	 * Numbering starts from 1 (not zero).
+	 *
+	 * @param size number of vertices (nodes) in the complete graph.
+	 * @throws Exception thrown if vertex set of {@link graph#g} is not empty.
+	 */
+	public void initializeAsCompleteGraph(int size) throws Exception
+	{
+		if ((!this.g.vertexSet().isEmpty()) && (this.g.vertexSet().size()>0))
+		{
+			throw new Exception("Graph is not empty!");
+		}
+		else
+		{
+			Supplier<Integer> vertexSupplier = new Supplier<>()
+			{
+				private int id = 1;
+				
+				@Override
+				public Integer get()
+				{
+					return id++;
+				}
+			};
+			this.g = new DefaultUndirectedGraph<>(vertexSupplier, SupplierUtil.createDefaultEdgeSupplier(),
+											false);
+			CompleteGraphGenerator<Integer, DefaultEdge> completeGraphGenerator =
+															new CompleteGraphGenerator<>(size);
+			completeGraphGenerator.generateGraph(this.g);
+		}
+	}
+	
+	/**
+	 * Initialize an empty graph {@link graph#g} with a circulant graph of given size.
+	 * <br>
+	 * A circulant graph is a graph of {@code n (= size)} vertices in which the {@code i}<sup>th</sup> vertex is
+	 * adjacent to the {@code (i+j)}<sup>th</sup> and the {@code (i-j)}<sup>th</sup> vertices for each {@code j} in the
+	 * array offsets.
+	 * <br>
+	 * Numbering starts from 1 (not zero).
+	 *
+	 * @param size number of vertices (nodes) in the circulant graph
+	 * @param offsets defines the list of all distances in any edge.
+	 * @throws Exception thrown if vertex set of {@link graph#g} is not empty.
+	 */
+	public void initializeAsCirculantGraph(int size, int[] offsets) throws Exception
+	{
+		if ((!this.g.vertexSet().isEmpty()) && (this.g.vertexSet().size()>0))
+		{
+			throw new Exception("Graph is not empty!");
+		}
+		else
+		{
+			// add vertices
+			for (int i=1; i<=size; i++)
+				this.g.addVertex(i);
+			// add edges
+			for (int i=1; i<=size; i++)
+				for (int offset : offsets)
+				{
+					this.g.addEdge(i, i-offset >= 1 ? i-offset : (i-offset+size));
+					this.g.addEdge(i, i+offset <= size ? i+offset : (i+offset)%size);
+				}
+		}
 	}
 	
 	/**
@@ -156,7 +269,48 @@ public class graph
 	 */
 	public void addEdge(Integer s, Integer t)
 	{
-		g.addEdge(s, t);
+		this.g.addEdge(s, t);
+	}
+	
+	/**
+	 * Returns a set of nodes contained in the graph {@link graph#g}.
+	 *
+	 * @return a set of nodes contained in the graph {@link graph#g}.
+	 */
+	public Set<Integer> getVertexSet()
+	{
+		return this.g.vertexSet();
+	}
+	
+	/**
+	 * Returns the set of edges contained in the graph {@link graph#g}.
+	 *
+	 * @return a set of the edges contained in the graph {@link graph#g}.
+	 */
+	public Set<DefaultEdge> getEdgeSet()
+	{
+		return this.g.edgeSet();
+	}
+	
+	/**
+	 * Removes nodes in {@code nodesToBeRemoved} from graph {@link graph#g}.
+	 *
+	 * @param nodesToBeRemoved nodes to be removed from the graph {@link graph#g}.
+	 */
+	public void removeAllVertices(Set<Integer> nodesToBeRemoved)
+	{
+		this.g.removeAllVertices(nodesToBeRemoved);
+	}
+	
+	/**
+	 * Get a map from nodes to their neighbors.
+	 *
+	 * @return a map from nodes to their neighbors.
+	 */
+	public Map<Integer, List<Integer>> getNeighbors()
+	{
+		Set<Integer> nodes = this.g.vertexSet();
+		return nodes.stream().collect(Collectors.toMap(v -> v, v -> Graphs.neighborListOf(this.g, v), (a, b) -> b));
 	}
 	
 	/**
