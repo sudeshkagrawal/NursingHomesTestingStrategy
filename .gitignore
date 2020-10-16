@@ -1,2 +1,8 @@
 # Project exclude paths
 /docs/
+/out/test/NursingHomesTestingStrategy/networks/
+/out/test/NursingHomesTestingStrategy/resources/networks/*.txt
+/out/test/NursingHomesTestingStrategy/resources/networks/*.png
+/out/test/NursingHomesTestingStrategy/network/*.class
+/out/production/NursingHomesTestingStrategy/*.class
+/out/production/NursingHomesTestingStrategy/network/*.class
