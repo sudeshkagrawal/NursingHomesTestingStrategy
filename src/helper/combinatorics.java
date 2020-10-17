@@ -16,9 +16,15 @@ public class combinatorics
 	 * @param n number of objects
 	 * @param k number of selections.
 	 * @return {@code n}-choose-{@code k (nCk)}.
+	 * @throws Exception thrown if any of the input is a negative integer, or if {@code n<k}.
 	 */
-	public static int nChoosek(int n, int k)
+	public static int nChoosek(int n, int k) throws Exception
 	{
+		if ((n<0) || (k<0))
+			throw new Exception("Inputs should be non-negative integers!");
+		if (n<k)
+			throw new Exception("'n<k' is not allowed!");
+		
 		BigInteger numerator = new BigInteger("1");
 		BigInteger denominator = new BigInteger("1");
 		for (int i=1; i<=k; i++)
