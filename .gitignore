@@ -6,3 +6,5 @@
 /out/test/NursingHomesTestingStrategy/network/*.class
 /out/production/NursingHomesTestingStrategy/*.class
 /out/production/NursingHomesTestingStrategy/network/*.class
+/out/production/NursingHomesTestingStrategy/helper/*.class
+/out/test/NursingHomesTestingStrategy/helper/*.class
