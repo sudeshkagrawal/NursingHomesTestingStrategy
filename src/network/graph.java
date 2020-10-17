@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a network graph.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 9, 2020.
+ * Last Updated: October 17, 2020.
  */
 public class graph
 {
@@ -155,13 +155,12 @@ public class graph
 	
 	/**
 	 * Initialize {@link graph#g}, assumed to be empty, with a complete graph of given size.
-	 * <br>
-	 * Numbering starts from 1 (not zero).
 	 *
-	 * @param size number of vertices (nodes) in the complete graph.
+	 * @param size number of vertices (nodes) in the complete graph
+	 * @param startWithZerothNode {@code true} if the first node should be 0 (instead of 1), {@code false} otherwise.
 	 * @throws Exception thrown if vertex set of {@link graph#g} is not empty.
 	 */
-	public void initializeAsCompleteGraph(int size) throws Exception
+	public void initializeAsCompleteGraph(int size, boolean startWithZerothNode) throws Exception
 	{
 		if ((!this.g.vertexSet().isEmpty()) && (this.g.vertexSet().size()>0))
 		{
@@ -171,7 +170,7 @@ public class graph
 		{
 			Supplier<Integer> vertexSupplier = new Supplier<>()
 			{
-				private int id = 1;
+				private int id = startWithZerothNode ? 0 : 1;
 				
 				@Override
 				public Integer get()
@@ -193,14 +192,13 @@ public class graph
 	 * A circulant graph is a graph of {@code n (= size)} vertices in which the {@code i}<sup>th</sup> vertex is
 	 * adjacent to the {@code (i+j)}<sup>th</sup> and the {@code (i-j)}<sup>th</sup> vertices for each {@code j} in the
 	 * array offsets.
-	 * <br>
-	 * Numbering starts from 1 (not zero).
 	 *
 	 * @param size number of vertices (nodes) in the circulant graph
-	 * @param offsets defines the list of all distances in any edge.
+	 * @param offsets defines the list of all distances in any edge
+	 * @param startWithZerothNode {@code true} if the first node should be 0 (instead of 1), {@code false} otherwise.
 	 * @throws Exception thrown if vertex set of {@link graph#g} is not empty.
 	 */
-	public void initializeAsCirculantGraph(int size, int[] offsets) throws Exception
+	public void initializeAsCirculantGraph(int size, int[] offsets, boolean startWithZerothNode) throws Exception
 	{
 		if ((!this.g.vertexSet().isEmpty()) && (this.g.vertexSet().size()>0))
 		{
@@ -208,16 +206,38 @@ public class graph
 		}
 		else
 		{
-			// add vertices
-			for (int i=1; i<=size; i++)
-				this.g.addVertex(i);
-			// add edges
-			for (int i=1; i<=size; i++)
-				for (int offset : offsets)
+			// starts with node 0
+			if (startWithZerothNode)
+			{
+				// add vertices
+				for (int i=0; i<size; i++)
+					this.g.addVertex(i);
+				// add edges
+				for (int i=0; i<size; i++)
 				{
-					this.g.addEdge(i, i-offset >= 1 ? i-offset : (i-offset+size));
-					this.g.addEdge(i, i+offset <= size ? i+offset : (i+offset)%size);
+					for (int offset : offsets)
+					{
+						this.g.addEdge(i, i-offset>=0 ? (i-offset)%size : (i-offset+size));
+						this.g.addEdge(i, (i+offset)%size);
+					}
 				}
+			}
+			// stats with node 1
+			else
+			{
+				// add vertices
+				for (int i=1; i<=size; i++)
+					this.g.addVertex(i);
+				// add edges
+				for (int i=1; i<=size; i++)
+				{
+					for (int offset : offsets)
+					{
+						this.g.addEdge(i, i-offset>=1 ? i-offset : (i-offset+size));
+						this.g.addEdge(i, i+offset<=size ? i+offset : (i+offset) % size);
+					}
+				}
+			}
 		}
 	}
 	

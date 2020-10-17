@@ -4,16 +4,22 @@ import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.*;
 
 /**
  * Unit tests for {@link graph}.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 15, 2020.
+ * Last Updated: October 17, 2020.
  */
 class graphTest
 {
-	
+	/**
+	 * Test for {@link graph#buildGraphFromFile(String, String)}.
+	 *
+	 * @throws Exception thrown if {@link graph#buildGraphFromFile(String, String)} throws an exception.
+	 */
 	@Test
 	void buildGraphFromFile() throws Exception
 	{
@@ -36,24 +42,57 @@ class graphTest
 		assert network.getG().containsEdge(6, 7);
 	}
 	
+	/**
+	 * Test for {@link graph#initializeAsCompleteGraph(int, boolean)}.
+	 *
+	 * @throws Exception thrown if {@link graph#initializeAsCompleteGraph(int, boolean)} throws an exception.
+	 */
 	@Test
 	void initializeAsCompleteGraph() throws Exception
 	{
 		int size = 4;
 		graph network = new graph("CompleteGraph_size"+size);
-		network.initializeAsCompleteGraph(size);
+		network.initializeAsCompleteGraph(size, false);
 		for (int i=1; i<=size; i++)
-			for (int j = 1; j <=size; j++)
-				assert i == j || (network.getG().containsEdge(i, j));
+		{
+			for (int j=1; j <=size; j++)
+			{
+				assert i==j || (network.getG().containsEdge(i, j));
+			}
+		}
+		
+		network = new graph("CompleteGraph_size"+size);
+		network.initializeAsCompleteGraph(size, true);
+		for (int i=0; i<size; i++)
+		{
+			for (int j=0; j <size; j++)
+			{
+				assert i==j || (network.getG().containsEdge(i, j));
+			}
+		}
+		
+		network = new graph("CompleteGraph_size"+size);
+		network.addVertex(2);
+		graph finalNetwork = network;
+		Exception exception = assertThrows(Exception.class, () -> finalNetwork.initializeAsCompleteGraph(size,
+													false));
+		String expectedMessage = "Graph is not empty!";
+		String actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
 	}
 	
+	/**
+	 * Test for {@link graph#initializeAsCirculantGraph(int, int[], boolean)}.
+	 *
+	 * @throws Exception thrown if {@link graph#initializeAsCirculantGraph(int, int[], boolean)} throws an exception.
+	 */
 	@Test
 	void initializeAsCirculantGraph() throws Exception
 	{
 		int size = 7;
 		int[] offsets = {2, 4};
 		graph network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
-		network.initializeAsCirculantGraph(size, offsets);
+		network.initializeAsCirculantGraph(size, offsets, false);
 		assert network.getG().containsEdge(1, 6);
 		assert network.getG().containsEdge(1, 3);
 		assert network.getG().containsEdge(1, 4);
@@ -88,6 +127,53 @@ class graphTest
 		assert !network.getG().containsEdge(6, 7);
 		
 		assert !network.getG().containsEdge(7, 7);
+		
+		
+		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
+		network.initializeAsCirculantGraph(size, offsets, true);
+		assert network.getG().containsEdge(0, 5);
+		assert network.getG().containsEdge(0, 2);
+		assert network.getG().containsEdge(0, 3);
+		assert network.getG().containsEdge(0, 4);
+		assert !network.getG().containsEdge(0, 0);
+		assert !network.getG().containsEdge(0, 1);
+		assert !network.getG().containsEdge(0, 6);
+		
+		assert network.getG().containsEdge(1, 6);
+		assert network.getG().containsEdge(1, 3);
+		assert network.getG().containsEdge(1, 4);
+		assert network.getG().containsEdge(1, 5);
+		assert !network.getG().containsEdge(1, 1);
+		assert !network.getG().containsEdge(1, 2);
+		
+		assert network.getG().containsEdge(2, 4);
+		assert network.getG().containsEdge(2, 5);
+		assert network.getG().containsEdge(2, 6);
+		assert !network.getG().containsEdge(2, 2);
+		assert !network.getG().containsEdge(2, 3);
+		
+		assert network.getG().containsEdge(3, 5);
+		assert network.getG().containsEdge(3, 6);
+		assert !network.getG().containsEdge(3, 3);
+		assert !network.getG().containsEdge(3, 4);
+		
+		assert network.getG().containsEdge(4, 6);
+		assert !network.getG().containsEdge(4, 4);
+		assert !network.getG().containsEdge(4, 5);
+		
+		assert !network.getG().containsEdge(5, 5);
+		assert !network.getG().containsEdge(5, 6);
+		
+		assert !network.getG().containsEdge(6, 6);
+		
+		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
+		network.addVertex(2);
+		graph finalNetwork = network;
+		Exception exception = assertThrows(Exception.class, () -> finalNetwork.initializeAsCirculantGraph(size,
+				offsets, true));
+		String expectedMessage = "Graph is not empty!";
+		String actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
 	}
 	
 	@Test
@@ -121,7 +207,7 @@ class graphTest
 	{
 		int size = 4;
 		graph network = new graph("CompleteGraph_size"+size);
-		network.initializeAsCompleteGraph(size);
+		network.initializeAsCompleteGraph(size, false);
 		
 		assert network.getVertexSet().size()==4;
 		network.addVertex(size+1);
@@ -134,7 +220,7 @@ class graphTest
 	{
 		int size = 4;
 		graph network = new graph("CompleteGraph_size"+size);
-		network.initializeAsCompleteGraph(size);
+		network.initializeAsCompleteGraph(size, false);
 		
 		assert network.getEdgeSet().size()==6;
 		network.addVertex(size+1);
