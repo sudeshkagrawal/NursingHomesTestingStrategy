@@ -217,9 +217,9 @@ public class graph
 			throw new Exception("'startingNodeLabel<size' should hold!");
 		if ((!this.g.vertexSet().isEmpty()) && (this.g.vertexSet().size()>0))
 			throw new Exception("Graph is not empty!");
-		if (Arrays.stream(offsets).min().getAsInt()<0)
+		if (Arrays.stream(offsets).min().orElse(1)<0)
 			throw new Exception("Offset values cannot be negative!");
-		if (Arrays.stream(offsets).max().getAsInt()>size)
+		if (Arrays.stream(offsets).max().orElse(size-1)>size)
 			throw new Exception("Offset values cannot be larger than size of the network!");
 		
 		// add vertices
