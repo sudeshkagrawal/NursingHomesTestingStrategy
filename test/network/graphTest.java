@@ -229,6 +229,47 @@ class graphTest
 		assert Graphs.neighborListOf(network.getG(), 1).contains(5);
 	}
 	
+	/**
+	 * Test for {@link graph#addEdges(Integer, List)}.
+	 *
+	 * @throws Exception thrown if {@link graph#initializeAsCompleteGraph(int, boolean)} throws an exception.
+	 */
+	@Test
+	void addEdges() throws Exception
+	{
+		int size = 4;
+		graph network = new graph("CompleteGraph_size"+size);
+		network.initializeAsCompleteGraph(size, false);
+		List<Integer> nodes = new ArrayList<>(network.getVertexSet());
+		network.addVertex(0);
+		network.addEdges(0, nodes);
+		
+		assert Graphs.neighborListOf(network.getG(), 0).contains(1);
+		assert Graphs.neighborListOf(network.getG(), 0).contains(2);
+		assert Graphs.neighborListOf(network.getG(), 0).contains(3);
+		assert Graphs.neighborListOf(network.getG(), 0).contains(4);
+	}
+	
+	/**
+	 * Test for {@link graph#addEdges(Integer, Set)}.
+	 *
+	 * @throws Exception thrown if {@link graph#initializeAsCompleteGraph(int, boolean)} throws an exception.
+	 */
+	@Test
+	void testAddEdges() throws Exception
+	{
+		int size = 4;
+		graph network = new graph("CompleteGraph_size"+size);
+		network.initializeAsCompleteGraph(size, false);
+		network.addVertex(0);
+		network.addEdges(0, network.getVertexSet());
+		
+		assert Graphs.neighborListOf(network.getG(), 0).contains(1);
+		assert Graphs.neighborListOf(network.getG(), 0).contains(2);
+		assert Graphs.neighborListOf(network.getG(), 0).contains(3);
+		assert Graphs.neighborListOf(network.getG(), 0).contains(4);
+	}
+	
 	@Test
 	void removeSelfLoops() throws Exception
 	{

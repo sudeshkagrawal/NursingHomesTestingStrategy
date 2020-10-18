@@ -293,6 +293,30 @@ public class graph
 	}
 	
 	/**
+	 * Adds an edge between {@code sourceNode} and all nodes in {@code targetNodes}.
+	 * Overloaded function: see {@link graph#addEdges(Integer, Set)}.
+	 *
+	 * @param sourceNode source of the edge to be added
+	 * @param targetNodes list of target nodes.
+	 */
+	public void addEdges(Integer sourceNode, List<Integer> targetNodes)
+	{
+		targetNodes.forEach(targetNode -> this.addEdge(sourceNode, targetNode));
+	}
+	
+	/**
+	 * Adds an edge between {@code sourceNode} and all nodes in {@code targetNodes}.
+	 * Overloaded function: see {@link graph#addEdges(Integer, List)}.
+	 *
+	 * @param sourceNode source of the edge to be added
+	 * @param targetNodes set of target nodes.
+	 */
+	public void addEdges(Integer sourceNode, Set<Integer> targetNodes)
+	{
+		targetNodes.forEach(targetNode -> this.addEdge(sourceNode, targetNode));
+	}
+	
+	/**
 	 * Returns a set of nodes contained in the graph {@link graph#g}.
 	 *
 	 * @return a set of nodes contained in the graph {@link graph#g}.
