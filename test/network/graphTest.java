@@ -43,56 +43,106 @@ class graphTest
 	}
 	
 	/**
-	 * Test for {@link graph#initializeAsCompleteGraph(int, boolean)}.
+	 * Test for {@link graph#initializeAsCompleteGraph(int, int)}.
 	 *
-	 * @throws Exception thrown if {@link graph#initializeAsCompleteGraph(int, boolean)} throws an exception.
+	 * @throws Exception thrown if {@link graph#initializeAsCompleteGraph(int, int)} throws an exception.
 	 */
 	@Test
 	void initializeAsCompleteGraph() throws Exception
 	{
+		// starting node 1
 		int size = 4;
 		graph network = new graph("CompleteGraph_size"+size);
-		network.initializeAsCompleteGraph(size, false);
+		network.initializeAsCompleteGraph(size, 1);
 		for (int i=1; i<=size; i++)
 		{
 			for (int j=1; j <=size; j++)
 			{
-				assert i==j || (network.getG().containsEdge(i, j));
+				if (i==j)
+					assert !network.getG().containsEdge(i, j);
+				else
+					assert network.getG().containsEdge(i, j);
 			}
 		}
 		
+		// starting node 0
 		network = new graph("CompleteGraph_size"+size);
-		network.initializeAsCompleteGraph(size, true);
+		network.initializeAsCompleteGraph(size, 0);
 		for (int i=0; i<size; i++)
 		{
 			for (int j=0; j <size; j++)
 			{
-				assert i==j || (network.getG().containsEdge(i, j));
+				if (i==j)
+					assert !network.getG().containsEdge(i, j);
+				else
+					assert network.getG().containsEdge(i, j);
 			}
 		}
 		
+		// starting node 3
+		network = new graph("CompleteGraph_size"+size);
+		network.initializeAsCompleteGraph(size, 3);
+		for (int i=3; i<(size+3); i++)
+		{
+			for (int j=3; j <(size+3); j++)
+			{
+				if (i==j)
+					assert !network.getG().containsEdge(i, j);
+				else
+					assert network.getG().containsEdge(i, j);
+			}
+		}
+		
+		// invalid size
+		network = new graph("CompleteGraph_size"+size);
+		graph finalNetwork = network;
+		Exception exception = assertThrows(Exception.class, () -> finalNetwork.initializeAsCompleteGraph(-2,
+				3));
+		String expectedMessage = "Size cannot be negative!";
+		String actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
+		
+		// invalid starting node label
+		network = new graph("CompleteGraph_size"+size);
+		graph finalNetwork1 = network;
+		exception = assertThrows(Exception.class, () -> finalNetwork1.initializeAsCompleteGraph(size,
+				-3));
+		expectedMessage = "Node labels should be non-negative integers!";
+		actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
+		
+		network = new graph("CompleteGraph_size"+size);
+		graph finalNetwork2 = network;
+		exception = assertThrows(Exception.class, () -> finalNetwork2.initializeAsCompleteGraph(size,
+				10));
+		expectedMessage = "'startingNodeLabel<size' should hold!";
+		actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
+		
+		// graph not empty
 		network = new graph("CompleteGraph_size"+size);
 		network.addVertex(2);
-		graph finalNetwork = network;
-		Exception exception = assertThrows(Exception.class, () -> finalNetwork.initializeAsCompleteGraph(size,
-													false));
-		String expectedMessage = "Graph is not empty!";
-		String actualMessage = exception.getMessage();
+		graph finalNetwork3 = network;
+		exception = assertThrows(Exception.class, () -> finalNetwork3.initializeAsCompleteGraph(size,
+				3));
+		expectedMessage = "Graph is not empty!";
+		actualMessage = exception.getMessage();
 		assertEquals(expectedMessage, actualMessage);
 	}
 	
 	/**
-	 * Test for {@link graph#initializeAsCirculantGraph(int, int[], boolean)}.
+	 * Test for {@link graph#initializeAsCirculantGraph(int, int[], int)}.
 	 *
-	 * @throws Exception thrown if {@link graph#initializeAsCirculantGraph(int, int[], boolean)} throws an exception.
+	 * @throws Exception thrown if {@link graph#initializeAsCirculantGraph(int, int[], int)} throws an exception.
 	 */
 	@Test
 	void initializeAsCirculantGraph() throws Exception
 	{
+		// starting node 1
 		int size = 7;
 		int[] offsets = {2, 4};
 		graph network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
-		network.initializeAsCirculantGraph(size, offsets, false);
+		network.initializeAsCirculantGraph(size, offsets, 1);
 		assert network.getG().containsEdge(1, 6);
 		assert network.getG().containsEdge(1, 3);
 		assert network.getG().containsEdge(1, 4);
@@ -128,9 +178,9 @@ class graphTest
 		
 		assert !network.getG().containsEdge(7, 7);
 		
-		
+		// starting node 0
 		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
-		network.initializeAsCirculantGraph(size, offsets, true);
+		network.initializeAsCirculantGraph(size, offsets, 0);
 		assert network.getG().containsEdge(0, 5);
 		assert network.getG().containsEdge(0, 2);
 		assert network.getG().containsEdge(0, 3);
@@ -166,13 +216,99 @@ class graphTest
 		
 		assert !network.getG().containsEdge(6, 6);
 		
+		
+		// starting node 3
+		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
+		network.initializeAsCirculantGraph(size, offsets, 3);
+		assert network.getG().containsEdge(3, 8);
+		assert network.getG().containsEdge(3, 5);
+		assert network.getG().containsEdge(3, 6);
+		assert network.getG().containsEdge(3, 7);
+		assert !network.getG().containsEdge(3, 3);
+		assert !network.getG().containsEdge(3, 4);
+		assert !network.getG().containsEdge(3, 9);
+		
+		assert network.getG().containsEdge(4, 9);
+		assert network.getG().containsEdge(4, 6);
+		assert network.getG().containsEdge(4, 7);
+		assert network.getG().containsEdge(4, 8);
+		assert !network.getG().containsEdge(4, 4);
+		assert !network.getG().containsEdge(4, 5);
+		
+		assert network.getG().containsEdge(5, 7);
+		assert network.getG().containsEdge(5, 8);
+		assert network.getG().containsEdge(5, 9);
+		assert !network.getG().containsEdge(5, 5);
+		assert !network.getG().containsEdge(5, 6);
+		
+		assert network.getG().containsEdge(6, 8);
+		assert network.getG().containsEdge(6, 9);
+		assert !network.getG().containsEdge(6, 6);
+		assert !network.getG().containsEdge(6, 7);
+		
+		assert network.getG().containsEdge(7, 9);
+		assert !network.getG().containsEdge(7, 7);
+		assert !network.getG().containsEdge(7, 8);
+		
+		assert !network.getG().containsEdge(8, 8);
+		assert !network.getG().containsEdge(8, 9);
+		
+		assert !network.getG().containsEdge(9, 9);
+		
+		
+		// invalid size
+		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
+		graph finalNetwork = network;
+		Exception exception = assertThrows(Exception.class, () -> finalNetwork.initializeAsCirculantGraph(-2,
+				offsets, 5));
+		String expectedMessage = "Size cannot be negative!";
+		String actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
+		
+		// invalid starting node label
+		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
+		graph finalNetwork1 = network;
+		exception = assertThrows(Exception.class, () -> finalNetwork1.initializeAsCirculantGraph(size,
+				offsets, -3));
+		expectedMessage = "Node labels should be non-negative integers!";
+		actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
+		
+		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
+		graph finalNetwork2 = network;
+		exception = assertThrows(Exception.class, () -> finalNetwork2.initializeAsCirculantGraph(size,
+				offsets, 10));
+		expectedMessage = "'startingNodeLabel<size' should hold!";
+		actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
+		
+		// graph not empty
 		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
 		network.addVertex(2);
-		graph finalNetwork = network;
-		Exception exception = assertThrows(Exception.class, () -> finalNetwork.initializeAsCirculantGraph(size,
-				offsets, true));
-		String expectedMessage = "Graph is not empty!";
-		String actualMessage = exception.getMessage();
+		graph finalNetwork3 = network;
+		exception = assertThrows(Exception.class, () -> finalNetwork3.initializeAsCirculantGraph(size,
+				offsets, 5));
+		expectedMessage = "Graph is not empty!";
+		actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
+		
+		// invalid offset values
+		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
+		graph finalNetwork4 = network;
+		int[] newOffsets1 = {2, -1, 3};
+		exception = assertThrows(Exception.class, () -> finalNetwork4.initializeAsCirculantGraph(size,
+				newOffsets1, 5));
+		expectedMessage = "Offset values cannot be negative!";
+		actualMessage = exception.getMessage();
+		assertEquals(expectedMessage, actualMessage);
+		
+		network = new graph("CirculantGraph_size"+size+"_offsets_"+ Arrays.toString(offsets));
+		graph finalNetwork5 = network;
+		int[] newOffsets2 = {2, 3, 10};
+		exception = assertThrows(Exception.class, () -> finalNetwork5.initializeAsCirculantGraph(size,
+				newOffsets2, 5));
+		expectedMessage = "Offset values cannot be larger than size of the network!";
+		actualMessage = exception.getMessage();
 		assertEquals(expectedMessage, actualMessage);
 	}
 	
@@ -207,7 +343,7 @@ class graphTest
 	{
 		int size = 4;
 		graph network = new graph("CompleteGraph_size"+size);
-		network.initializeAsCompleteGraph(size, false);
+		network.initializeAsCompleteGraph(size, 1);
 		
 		assert network.getVertexSet().size()==4;
 		network.addVertex(size+1);
@@ -220,7 +356,7 @@ class graphTest
 	{
 		int size = 4;
 		graph network = new graph("CompleteGraph_size"+size);
-		network.initializeAsCompleteGraph(size, false);
+		network.initializeAsCompleteGraph(size, 1);
 		
 		assert network.getEdgeSet().size()==6;
 		network.addVertex(size+1);
@@ -232,14 +368,14 @@ class graphTest
 	/**
 	 * Test for {@link graph#addEdges(Integer, List)}.
 	 *
-	 * @throws Exception thrown if {@link graph#initializeAsCompleteGraph(int, boolean)} throws an exception.
+	 * @throws Exception thrown if {@link graph#initializeAsCompleteGraph(int, int)} throws an exception.
 	 */
 	@Test
 	void addEdges() throws Exception
 	{
 		int size = 4;
 		graph network = new graph("CompleteGraph_size"+size);
-		network.initializeAsCompleteGraph(size, false);
+		network.initializeAsCompleteGraph(size, 1);
 		List<Integer> nodes = new ArrayList<>(network.getVertexSet());
 		network.addVertex(0);
 		network.addEdges(0, nodes);
@@ -253,14 +389,14 @@ class graphTest
 	/**
 	 * Test for {@link graph#addEdges(Integer, Set)}.
 	 *
-	 * @throws Exception thrown if {@link graph#initializeAsCompleteGraph(int, boolean)} throws an exception.
+	 * @throws Exception thrown if {@link graph#initializeAsCompleteGraph(int, int)} throws an exception.
 	 */
 	@Test
 	void testAddEdges() throws Exception
 	{
 		int size = 4;
 		graph network = new graph("CompleteGraph_size"+size);
-		network.initializeAsCompleteGraph(size, false);
+		network.initializeAsCompleteGraph(size, 1);
 		network.addVertex(0);
 		network.addEdges(0, network.getVertexSet());
 		

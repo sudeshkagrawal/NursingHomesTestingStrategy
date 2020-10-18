@@ -157,33 +157,38 @@ public class graph
 	 * Initialize {@link graph#g}, assumed to be empty, with a complete graph of given size.
 	 *
 	 * @param size number of vertices (nodes) in the complete graph
-	 * @param startWithZerothNode {@code true} if the first node should be 0 (instead of 1), {@code false} otherwise.
-	 * @throws Exception thrown if vertex set of {@link graph#g} is not empty.
+	 * @param startingNodeLabel node numbering to start from.
+	 * @throws Exception thrown if {@code size<0},
+	 * or if {@code startingNodeLabel<0},
+	 * or if {@code startingNodeLabel>=size},
+	 * or if vertex set of {@link graph#g} is not empty.
 	 */
-	public void initializeAsCompleteGraph(int size, boolean startWithZerothNode) throws Exception
+	public void initializeAsCompleteGraph(int size, int startingNodeLabel) throws Exception
 	{
+		if (size<0)
+			throw new Exception("Size cannot be negative!");
+		if (startingNodeLabel<0)
+			throw new Exception("Node labels should be non-negative integers!");
+		if (startingNodeLabel>=size)
+			throw new Exception("'startingNodeLabel<size' should hold!");
 		if ((!this.g.vertexSet().isEmpty()) && (this.g.vertexSet().size()>0))
-		{
 			throw new Exception("Graph is not empty!");
-		}
-		else
+		
+		Supplier<Integer> vertexSupplier = new Supplier<>()
 		{
-			Supplier<Integer> vertexSupplier = new Supplier<>()
+			private int id = startingNodeLabel;
+			
+			@Override
+			public Integer get()
 			{
-				private int id = startWithZerothNode ? 0 : 1;
-				
-				@Override
-				public Integer get()
-				{
-					return id++;
-				}
-			};
-			this.g = new DefaultUndirectedGraph<>(vertexSupplier, SupplierUtil.createDefaultEdgeSupplier(),
-											false);
-			CompleteGraphGenerator<Integer, DefaultEdge> completeGraphGenerator =
-															new CompleteGraphGenerator<>(size);
-			completeGraphGenerator.generateGraph(this.g);
-		}
+				return id++;
+			}
+		};
+		this.g = new DefaultUndirectedGraph<>(vertexSupplier, SupplierUtil.createDefaultEdgeSupplier(),
+				false);
+		CompleteGraphGenerator<Integer, DefaultEdge> completeGraphGenerator =
+				new CompleteGraphGenerator<>(size);
+		completeGraphGenerator.generateGraph(this.g);
 	}
 	
 	/**
@@ -195,48 +200,38 @@ public class graph
 	 *
 	 * @param size number of vertices (nodes) in the circulant graph
 	 * @param offsets defines the list of all distances in any edge
-	 * @param startWithZerothNode {@code true} if the first node should be 0 (instead of 1), {@code false} otherwise.
-	 * @throws Exception thrown if vertex set of {@link graph#g} is not empty.
+	 * @param startingNodeLabel node numbering to start from.
+	 * @throws Exception thrown if {@code size<0},
+	 * or if {@code startingNodeLabel<0},
+	 * or if {@code startingNodeLabel>=size},
+	 * or if vertex set of {@link graph#g} is not empty,
+	 * of if {@code offsets} has invalid values.
 	 */
-	public void initializeAsCirculantGraph(int size, int[] offsets, boolean startWithZerothNode) throws Exception
+	public void initializeAsCirculantGraph(int size, int[] offsets, int startingNodeLabel) throws Exception
 	{
+		if (size<0)
+			throw new Exception("Size cannot be negative!");
+		if (startingNodeLabel<0)
+			throw new Exception("Node labels should be non-negative integers!");
+		if (startingNodeLabel>=size)
+			throw new Exception("'startingNodeLabel<size' should hold!");
 		if ((!this.g.vertexSet().isEmpty()) && (this.g.vertexSet().size()>0))
-		{
 			throw new Exception("Graph is not empty!");
-		}
-		else
+		if (Arrays.stream(offsets).min().getAsInt()<0)
+			throw new Exception("Offset values cannot be negative!");
+		if (Arrays.stream(offsets).max().getAsInt()>size)
+			throw new Exception("Offset values cannot be larger than size of the network!");
+		
+		// add vertices
+		for (int i=startingNodeLabel; i<(size+startingNodeLabel); i++)
+			this.g.addVertex(i);
+		// add edges
+		for (int i=startingNodeLabel; i<(size+startingNodeLabel); i++)
 		{
-			// starts with node 0
-			if (startWithZerothNode)
+			for (int offset : offsets)
 			{
-				// add vertices
-				for (int i=0; i<size; i++)
-					this.g.addVertex(i);
-				// add edges
-				for (int i=0; i<size; i++)
-				{
-					for (int offset : offsets)
-					{
-						this.g.addEdge(i, i-offset>=0 ? (i-offset)%size : (i-offset+size));
-						this.g.addEdge(i, (i+offset)%size);
-					}
-				}
-			}
-			// stats with node 1
-			else
-			{
-				// add vertices
-				for (int i=1; i<=size; i++)
-					this.g.addVertex(i);
-				// add edges
-				for (int i=1; i<=size; i++)
-				{
-					for (int offset : offsets)
-					{
-						this.g.addEdge(i, i-offset>=1 ? i-offset : (i-offset+size));
-						this.g.addEdge(i, i+offset<=size ? i+offset : (i+offset) % size);
-					}
-				}
+				this.g.addEdge(i, i-offset>=startingNodeLabel ? i-offset : (i-offset+size));
+				this.g.addEdge(i, i+offset<(size+startingNodeLabel) ? i+offset : (i+offset)%size);
 			}
 		}
 	}
