@@ -1,5 +1,6 @@
 package network;
 
+import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import java.util.*;
 /**
  * Unit tests for {@link graph}.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 17, 2020.
+ * Last Updated: October 18, 2020.
  */
 class graphTest
 {
@@ -490,57 +491,57 @@ class graphTest
 		Set<DefaultEdge> edgeSet = network.getEdgeSet();
 		for (DefaultEdge e: edgeSet)
 		{
-			int source = network.getG().getEdgeSource(e);
+			int source = network.getEdgeSource(e);
 			switch (source)
 			{
 				case 1:
 				case 3:
-					assert (network.getG().getEdgeTarget(e)==2 ||
-							network.getG().getEdgeTarget(e)==4);
+					assert (network.getEdgeTarget(e)==2 ||
+							network.getEdgeTarget(e)==4);
 					break;
 				case 2:
-					assert (network.getG().getEdgeTarget(e)==1 ||
-							network.getG().getEdgeTarget(e)==3 ||
-							network.getG().getEdgeTarget(e)==4);
+					assert (network.getEdgeTarget(e)==1 ||
+							network.getEdgeTarget(e)==3 ||
+							network.getEdgeTarget(e)==4);
 					break;
 				case 4:
-					assert (network.getG().getEdgeTarget(e)==1 ||
-							network.getG().getEdgeTarget(e)==2 ||
-							network.getG().getEdgeTarget(e)==3);
+					assert (network.getEdgeTarget(e)==1 ||
+							network.getEdgeTarget(e)==2 ||
+							network.getEdgeTarget(e)==3);
 					break;
 				case 5:
-					assert (network.getG().getEdgeTarget(e)==6 ||
-							network.getG().getEdgeTarget(e)==7);
+					assert (network.getEdgeTarget(e)==6 ||
+							network.getEdgeTarget(e)==7);
 					break;
 				case 6:
-					assert (network.getG().getEdgeTarget(e)==5 ||
-							network.getG().getEdgeTarget(e)==7);
+					assert (network.getEdgeTarget(e)==5 ||
+							network.getEdgeTarget(e)==7);
 					break;
 				case 7:
-					assert (network.getG().getEdgeTarget(e)==5 ||
-							network.getG().getEdgeTarget(e)==6);
+					assert (network.getEdgeTarget(e)==5 ||
+							network.getEdgeTarget(e)==6);
 					break;
 				case 8:
-					assert (network.getG().getEdgeTarget(e)==9 ||
-							network.getG().getEdgeTarget(e)==10);
+					assert (network.getEdgeTarget(e)==9 ||
+							network.getEdgeTarget(e)==10);
 					break;
 				case 9:
-					assert (network.getG().getEdgeTarget(e)==8 ||
-							network.getG().getEdgeTarget(e)==10);
+					assert (network.getEdgeTarget(e)==8 ||
+							network.getEdgeTarget(e)==10);
 					break;
 				case 10:
-					assert (network.getG().getEdgeTarget(e)==8 ||
-							network.getG().getEdgeTarget(e)==9 ||
-							network.getG().getEdgeTarget(e)==11 ||
-							network.getG().getEdgeTarget(e)==12);
+					assert (network.getEdgeTarget(e)==8 ||
+							network.getEdgeTarget(e)==9 ||
+							network.getEdgeTarget(e)==11 ||
+							network.getEdgeTarget(e)==12);
 					break;
 				case 11:
-					assert (network.getG().getEdgeTarget(e)==10 ||
-							network.getG().getEdgeTarget(e)==12);
+					assert (network.getEdgeTarget(e)==10 ||
+							network.getEdgeTarget(e)==12);
 					break;
 				case 12:
-					assert (network.getG().getEdgeTarget(e)==10 ||
-							network.getG().getEdgeTarget(e)==11);
+					assert (network.getEdgeTarget(e)==10 ||
+							network.getEdgeTarget(e)==11);
 					break;
 				default: assert false;
 			}
@@ -598,5 +599,85 @@ class graphTest
 		assert neighbors.get(5).size()==4;
 		assert neighbors.get(6).size()==4;
 		assert neighbors.get(7).size()==2;
+	}
+	
+	/**
+	 * Unit test for {@link graph#getEdgeSource(DefaultEdge)}.
+	 *
+	 */
+	@Test
+	void getEdgeSource()
+	{
+		String networkName = "testNetwork";
+		graph network = new graph(networkName);
+		
+		network.addVertex(-1);
+		network.addVertex(10);
+		network.addEdge(-1, 10);
+		List<DefaultEdge> edgeSet = new ArrayList<>(network.getEdgeSet());
+		assert network.getEdgeSource(edgeSet.get(0))==-1;
+		
+		network.addVertex(11);
+		network.addEdge(11, -1);
+		edgeSet = new ArrayList<>(network.getEdgeSet());
+		assert network.getEdgeSource(edgeSet.get(1))==11;
+	}
+	
+	/**
+	 * Unit test for {@link graph#getEdgeTarget(DefaultEdge)}.
+	 * 
+	 */
+	@Test
+	void getEdgeTarget()
+	{
+		String networkName = "testNetwork";
+		graph network = new graph(networkName);
+		
+		network.addVertex(-1);
+		network.addVertex(10);
+		network.addEdge(-1, 10);
+		List<DefaultEdge> edgeSet = new ArrayList<>(network.getEdgeSet());
+		assert network.getEdgeTarget(edgeSet.get(0))==10;
+		
+		network.addVertex(11);
+		network.addEdge(11, -1);
+		edgeSet = new ArrayList<>(network.getEdgeSet());
+		assert network.getEdgeTarget(edgeSet.get(1))==-1;
+	}
+	
+	/**
+	 * Unit test for {@link graph#remapNodeLabels(int)}.
+	 *
+	 * @throws Exception thrown if {@link graph#buildGraphFromFile(String, String)} throws an exception.
+	 */
+	@Test
+	void remapNodeLabels() throws Exception
+	{
+		String networkName = "braessNetwork";
+		graph network = new graph(networkName);
+		String separator = ",";
+		network.buildGraphFromFile("./test/resources/networks/"+networkName+".txt", separator);
+		
+		Graph<Integer, DefaultEdge> remappedNetwork = network.remapNodeLabels(-1);
+		graph remappedGraph = new graph(remappedNetwork, networkName+"_remapped", false);
+		Set<Integer> newNodes = remappedGraph.getVertexSet();
+		assert newNodes.contains(-1);
+		assert newNodes.contains(0);
+		assert newNodes.contains(1);
+		assert newNodes.contains(2);
+		
+		List<Integer> neighbors = Graphs.neighborListOf(remappedGraph.getG(),-1);
+		assert neighbors.contains(0);
+		assert neighbors.contains(2);
+		neighbors = Graphs.neighborListOf(remappedGraph.getG(),0);
+		assert neighbors.contains(-1);
+		assert neighbors.contains(1);
+		assert neighbors.contains(2);
+		neighbors = Graphs.neighborListOf(remappedGraph.getG(),1);
+		assert neighbors.contains(0);
+		assert neighbors.contains(2);
+		neighbors = Graphs.neighborListOf(remappedGraph.getG(),2);
+		assert neighbors.contains(-1);
+		assert neighbors.contains(1);
 	}
 }

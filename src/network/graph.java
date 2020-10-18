@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a network graph.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 17, 2020.
+ * Last Updated: October 18, 2020.
  */
 public class graph
 {
@@ -62,10 +62,23 @@ public class graph
 	public graph(Graph<Integer, DefaultEdge> g, String networkName, boolean copyGraphReference)
 	{
 		if (copyGraphReference)
+		{
 			this.g = g;
+		}
 		else
-			g.vertexSet().forEach(v -> Graphs.neighborListOf(g, v)
-					.forEach(neighbor -> this.g.addEdge(v, neighbor)));
+		{
+			this.g = new DefaultUndirectedGraph<>(DefaultEdge.class);
+			
+			// add vertices
+			Set<Integer> nodes = g.vertexSet();
+			for(Integer node: nodes)
+				this.g.addVertex(node);
+			
+			// add edges
+			Set<DefaultEdge> edges = g.edgeSet();
+			for(DefaultEdge edge: edges)
+				this.g.addEdge(g.getEdgeSource(edge), g.getEdgeTarget(edge));
+		}
 		this.networkName = networkName;
 	}
 	
@@ -369,5 +382,55 @@ public class graph
 	public boolean hasSelfLoops()
 	{
 		return GraphTests.hasSelfLoops(this.g);
+	}
+	
+	/**
+	 * Find the source node of an edge.
+	 *
+	 * @param e an edge in the network.
+	 * @return the source node of the edge.
+	 */
+	public Integer getEdgeSource(DefaultEdge e)
+	{
+		return this.getG().getEdgeSource(e);
+	}
+	
+	/**
+	 * Find the target node of an edge.
+	 *
+	 * @param e an edge in the network.
+	 * @return the target node of the edge.
+	 */
+	public Integer getEdgeTarget(DefaultEdge e)
+	{
+		return this.getG().getEdgeTarget(e);
+	}
+	
+	/**
+	 * Remaps the node labels to start with {@code startingNodeLabel}.
+	 * The original network remains intact.
+	 *
+	 * @param startingNodeLabel node numbering to start from.
+	 * @return A network graph ({@link org.jgrapht.graph.DefaultUndirectedGraph})
+	 * with relabelled {@link java.lang.Integer} vertices and relabelled {@link org.jgrapht.graph.DefaultEdge} edges.
+	 */
+	public Graph<Integer, DefaultEdge> remapNodeLabels(int startingNodeLabel)
+	{
+		int minNodeLabel = this.getVertexSet().stream().min(Integer::compare).orElseThrow();
+		List<Integer> sortedNodes = this.getVertexSet().stream().sorted().collect(Collectors.toList());
+		int initialNodeDifference = startingNodeLabel-minNodeLabel;
+		Graph<Integer, DefaultEdge> remappedNetwork = new DefaultUndirectedGraph<>(DefaultEdge.class);
+		// remap vertices
+		for (Integer node: sortedNodes)
+			remappedNetwork.addVertex(node+initialNodeDifference);
+		// remap edges
+		Set<DefaultEdge> edgeSet = this.getEdgeSet();
+		for (DefaultEdge e: edgeSet)
+		{
+			int source = this.getEdgeSource(e);
+			int target = this.getEdgeTarget(e);
+			remappedNetwork.addEdge(source+initialNodeDifference, target+initialNodeDifference);
+		}
+		return remappedNetwork;
 	}
 }
