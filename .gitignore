@@ -8,3 +8,5 @@
 /out/production/NursingHomesTestingStrategy/network/*.class
 /out/production/NursingHomesTestingStrategy/helper/*.class
 /out/test/NursingHomesTestingStrategy/helper/*.class
+/out/production/NursingHomesTestingStrategy/dataTypes/*.class
+/out/production/NursingHomesTestingStrategy/simulation/*.class
