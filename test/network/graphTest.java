@@ -625,7 +625,7 @@ class graphTest
 	
 	/**
 	 * Unit test for {@link graph#getEdgeTarget(DefaultEdge)}.
-	 * 
+	 *
 	 */
 	@Test
 	void getEdgeTarget()
@@ -679,5 +679,28 @@ class graphTest
 		neighbors = Graphs.neighborListOf(remappedGraph.getG(),2);
 		assert neighbors.contains(-1);
 		assert neighbors.contains(1);
+		
+		// remap back to original
+		Graph<Integer, DefaultEdge> originalNetwork = remappedGraph.remapNodeLabels(1);
+		graph originalGraph = new graph(originalNetwork, networkName+"_original", false);
+		Set<Integer> originalNodes = originalGraph.getVertexSet();
+		assert originalNodes.contains(1);
+		assert originalNodes.contains(2);
+		assert originalNodes.contains(3);
+		assert originalNodes.contains(4);
+		
+		List<Integer> originalNeighbors = Graphs.neighborListOf(originalGraph.getG(),1);
+		assert originalNeighbors.contains(2);
+		assert originalNeighbors.contains(4);
+		originalNeighbors = Graphs.neighborListOf(originalGraph.getG(),2);
+		assert originalNeighbors.contains(1);
+		assert originalNeighbors.contains(3);
+		assert originalNeighbors.contains(4);
+		originalNeighbors = Graphs.neighborListOf(originalGraph.getG(),3);
+		assert originalNeighbors.contains(2);
+		assert originalNeighbors.contains(4);
+		originalNeighbors = Graphs.neighborListOf(originalGraph.getG(),4);
+		assert originalNeighbors.contains(1);
+		assert originalNeighbors.contains(3);
 	}
 }
