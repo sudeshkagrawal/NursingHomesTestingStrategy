@@ -1,12 +1,12 @@
 package helper;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Contains methods for some combinatorial operations.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 17, 2020.
+ * Last Updated: November 3, 2020.
  */
 public class combinatorics
 {
@@ -40,7 +40,7 @@ public class combinatorics
 	 * Chooses elements from the state space of a distribution with probability mass function {@code pmf} based on
 	 * random stream {@code randomchoices}.
 	 * <br>
-	 * Overloaded function: see {@link combinatorics#discreteProbabilityChoice(ArrayList, int[], double[])}.
+	 * Overloaded function: see {@link combinatorics#discreteProbabilityChoice(List, int[], double[])}.
 	 *
 	 * @param randomChoices an array of random numbers in {@code [0, 1]}
 	 * @param stateSpace an array representing the state space of the probability distribution
@@ -83,7 +83,7 @@ public class combinatorics
 	 * @return an {@link java.util.ArrayList} of choices corresponding to elements in {@code randomchoices}.
 	 * @throws Exception thrown if elements of pmf do not sum up to 1.
 	 */
-	public static ArrayList<Integer> discreteProbabilityChoice(ArrayList<Double> randomChoices,
+	public static List<Integer> discreteProbabilityChoice(List<Double> randomChoices,
 	                                                           int[] stateSpace, double[] pmf) throws Exception
 	{
 		double[] cdf = new double[pmf.length];
@@ -107,5 +107,26 @@ public class combinatorics
 					if ((randomChoices.get(i)>cdf[j-1]) && (randomChoices.get(i)<=cdf[j]))
 						binomialChoices.set(i, stateSpace[j]);
 		return binomialChoices;
+	}
+	
+	/**
+	 * Returns {@code n} elements randomly selected from list {@code a}.
+	 *
+	 * @param a a list to make selection from
+	 * @param n number of elements in list {@code a} to be selected
+	 * @param randGenerator an instance of {@link java.util.SplittableRandom}.
+	 * @return a list of @code n} randomly selected elements from {@code a}.
+	 */
+	public static List<Integer> selectRandomElements(List<Integer> a, int n, SplittableRandom randGenerator)
+	{
+		List<Integer> acopy = new ArrayList<>(a);
+		List<Integer> outputList = new ArrayList<>(n);
+		for (int i=0; i<n; i++)
+		{
+			int randIndex = randGenerator.nextInt(acopy.size());
+			outputList.add(acopy.get(randIndex));
+			acopy.remove(randIndex);
+		}
+		return outputList;
 	}
 }

@@ -3,13 +3,14 @@ package helper;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link combinatorics}.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 17, 2020.
+ * Last Updated: November 3, 2020.
  */
 class combinatoricsTest
 {
@@ -82,9 +83,9 @@ class combinatoricsTest
 	}
 	
 	/**
-	 * Unit test for {@link combinatorics#discreteProbabilityChoice(ArrayList, int[], double[])}.
+	 * Unit test for {@link combinatorics#discreteProbabilityChoice(List, int[], double[])}.
 	 *
-	 * @throws Exception thrown if {@link combinatorics#discreteProbabilityChoice(ArrayList, int[], double[])}
+	 * @throws Exception thrown if {@link combinatorics#discreteProbabilityChoice(List, int[], double[])}
 	 * throws an exception.
 	 */
 	@Test
@@ -100,7 +101,7 @@ class combinatoricsTest
 		int[] stateSpace = {0, 1, 2};
 		double[] pmf = {0.3, 0.4, 0.3};
 		
-		ArrayList<Integer> choices = combinatorics.discreteProbabilityChoice(randomChoices, stateSpace, pmf);
+		List<Integer> choices = combinatorics.discreteProbabilityChoice(randomChoices, stateSpace, pmf);
 		assert choices.get(0)==0;
 		assert choices.get(1)==2;
 		assert choices.get(2)==1;
