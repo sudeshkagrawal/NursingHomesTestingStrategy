@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Unit tests for {@link graph}.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 18, 2020.
+ * Last Updated: November 3, 2020.
  */
 class graphTest
 {
@@ -602,6 +602,31 @@ class graphTest
 	}
 	
 	/**
+	 * Unit test for {@link graph#getNeighborsOfNode(int)}.
+	 *
+	 * @throws Exception thrown if call to {@link graph#buildGraphFromFile(String, String)} throws an exception.
+	 */
+	@Test
+	void getNeighborOfNode() throws Exception
+	{
+		String networkName = "testnetwork1";
+		graph network = new graph(networkName);
+		String separator = ",";
+		network.buildGraphFromFile("./test/resources/networks/"+networkName+".txt", separator);
+		
+		assert network.getNeighborsOfNode(1).contains(2);
+		assert network.getNeighborsOfNode(1).contains(3);
+		assert network.getNeighborsOfNode(1).contains(4);
+		assert network.getNeighborsOfNode(2).contains(5);
+		assert network.getNeighborsOfNode(3).contains(6);
+		assert network.getNeighborsOfNode(4).contains(5);
+		assert network.getNeighborsOfNode(4).contains(6);
+		assert network.getNeighborsOfNode(5).contains(6);
+		assert network.getNeighborsOfNode(5).contains(7);
+		assert network.getNeighborsOfNode(6).contains(7);
+	}
+	
+	/**
 	 * Unit test for {@link graph#getEdgeSource(DefaultEdge)}.
 	 *
 	 */
@@ -703,4 +728,6 @@ class graphTest
 		assert originalNeighbors.contains(1);
 		assert originalNeighbors.contains(3);
 	}
+	
+	
 }
