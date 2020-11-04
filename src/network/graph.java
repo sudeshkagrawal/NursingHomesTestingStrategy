@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a network graph.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 18, 2020.
+ * Last Updated: November 3, 2020.
  */
 public class graph
 {
@@ -366,6 +366,17 @@ public class graph
 	}
 	
 	/**
+	 * Get neighbors of a given node.
+	 *
+	 * @param node node whose neighbors are to be fetched.
+	 * @return neighbors of {@code node}.
+	 */
+	public List<Integer> getNeighborsOfNode(int node)
+	{
+		return Graphs.neighborListOf(this.g, node);
+	}
+	
+	/**
 	 * Removes self-loops from the graph {@link graph#g}.
 	 */
 	public void removeSelfLoops()
@@ -432,5 +443,15 @@ public class graph
 			remappedNetwork.addEdge(source+initialNodeDifference, target+initialNodeDifference);
 		}
 		return remappedNetwork;
+	}
+	
+	/**
+	 * Returns the minimum node label.
+	 *
+	 * @return the minimum node label.
+	 */
+	public int getMinimumNodeLabel()
+	{
+		return getVertexSet().stream().mapToInt(v -> v).min().orElseThrow(NoSuchElementException::new);
 	}
 }
