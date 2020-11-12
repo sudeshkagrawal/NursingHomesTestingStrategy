@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Represents parameters needed for simulation.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: October 17, 2020.
+ * Last Updated: November 12, 2020.
  */
 public class simulationParameters
 {
@@ -23,14 +23,20 @@ public class simulationParameters
 	 */
 	int numberOfSimulationRepetitions;
 	/**
-	 * False negative probability of detectors.
+	 * False negative probability of a disease test.
 	 * Assuming it is the same for all detectors.
 	 */
 	double falseNegativeProbability;
 	/**
-	 * Daily probability of transmission.
+	 * Daily probability of infection between neighbors.
 	 */
 	double transmissability;
+	
+	/**
+	 * The number of days to move from the exposed state to the infected state.
+	 * Once a node is exposed to an infected neighboring node, it moves to an infected state after {@code latency} days.
+	 */
+	int latency;
 	
 	/**
 	 * Daily probability of infection from outside world.
@@ -45,10 +51,11 @@ public class simulationParameters
 	 * @param numberOfSimulationRepetitions number of times simulation is repeated
 	 * @param falseNegativeProbability false negative probability of testing kit
 	 * @param transmissability daily probability of transmission
+	 * @param latency number of days to move from the exposed state to the infected state
 	 * @param externalInfectionProbability daily probability of infection from outside world.
 	 */
 	public simulationParameters(String networkName, int timeStep, int numberOfSimulationRepetitions,
-	                            double falseNegativeProbability, double transmissability,
+	                            double falseNegativeProbability, double transmissability, int latency,
 	                            double externalInfectionProbability)
 	{
 		this.networkName = networkName;
@@ -56,6 +63,7 @@ public class simulationParameters
 		this.numberOfSimulationRepetitions = numberOfSimulationRepetitions;
 		this.falseNegativeProbability = falseNegativeProbability;
 		this.transmissability = transmissability;
+		this.latency = latency;
 		this.externalInfectionProbability = externalInfectionProbability;
 	}
 	
@@ -71,6 +79,7 @@ public class simulationParameters
 		this.numberOfSimulationRepetitions = param.numberOfSimulationRepetitions;
 		this.falseNegativeProbability = param.falseNegativeProbability;
 		this.transmissability = param.transmissability;
+		this.latency = param.latency;
 		this.externalInfectionProbability = param.externalInfectionProbability;
 	}
 	
@@ -122,6 +131,16 @@ public class simulationParameters
 	public double getTransmissability()
 	{
 		return transmissability;
+	}
+	
+	/**
+	 * Getter.
+	 *
+	 * @return {@link simulationParameters#latency}.
+	 */
+	public int getLatency()
+	{
+		return latency;
 	}
 	
 	/**
@@ -187,6 +206,16 @@ public class simulationParameters
 	/**
 	 * Setter.
 	 *
+	 * @param latency number of days to move from the exposed state to the infected state.
+	 */
+	public void setLatency(int latency)
+	{
+		this.latency = latency;
+	}
+	
+	/**
+	 * Setter.
+	 *
 	 * @param externalInfectionProbability daily probability of infection from outside world.
 	 */
 	public void setExternalInfectionProbability(double externalInfectionProbability)
@@ -208,6 +237,7 @@ public class simulationParameters
 				+"simulation repetitions = "+numberOfSimulationRepetitions+"; "
 				+"false negative probability = "+falseNegativeProbability+"; "
 				+"transmissability = "+transmissability+"; "
+				+"latency = "+latency+"; "
 				+"external infection probability = "+externalInfectionProbability+".";
 	}
 	
@@ -231,6 +261,7 @@ public class simulationParameters
 				numberOfSimulationRepetitions == that.numberOfSimulationRepetitions &&
 				Double.compare(that.falseNegativeProbability, falseNegativeProbability) == 0 &&
 				Double.compare(that.transmissability, transmissability) == 0 &&
+				latency == that.latency &&
 				Double.compare(that.externalInfectionProbability, externalInfectionProbability) == 0 &&
 				networkName.equals(that.networkName);
 	}
@@ -244,6 +275,6 @@ public class simulationParameters
 	public int hashCode()
 	{
 		return Objects.hash(networkName, timeStep, numberOfSimulationRepetitions, falseNegativeProbability,
-								transmissability, externalInfectionProbability);
+								transmissability, latency, externalInfectionProbability);
 	}
 }
