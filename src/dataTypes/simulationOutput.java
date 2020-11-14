@@ -11,9 +11,9 @@ public class simulationOutput
 {
 	/**
 	 * Each element in the list is a sample path.
-	 * Each sample path maps time to set of infected nodes by that time.
+	 * Each sample path maps time to set of infectious nodes by that time.
 	 */
-	List<Map<Integer, Set<Integer>>>  samplesOfInfectedNodesAtEachTime;
+	List<Map<Integer, Set<Integer>>> samplesOfInfectiousNodesAtEachTime;
 	
 	/**
 	 * Simulation run time.
@@ -25,19 +25,19 @@ public class simulationOutput
 	 */
 	public simulationOutput()
 	{
-		this.samplesOfInfectedNodesAtEachTime = new ArrayList<>();
+		this.samplesOfInfectiousNodesAtEachTime = new ArrayList<>();
 	}
 	
 	/**
 	 * Constructor.
 	 *
-	 * @param samplesOfInfectedNodesAtEachTime sample paths
+	 * @param samplesOfInfectiousNodesAtEachTime sample paths
 	 * @param simulationWallTime simulation run time.
 	 */
-	public simulationOutput(List<Map<Integer, Set<Integer>>> samplesOfInfectedNodesAtEachTime,
+	public simulationOutput(List<Map<Integer, Set<Integer>>> samplesOfInfectiousNodesAtEachTime,
 	                        double simulationWallTime)
 	{
-		this.samplesOfInfectedNodesAtEachTime = samplesOfInfectedNodesAtEachTime;
+		this.samplesOfInfectiousNodesAtEachTime = samplesOfInfectiousNodesAtEachTime;
 		this.simulationWallTime = simulationWallTime;
 	}
 	
@@ -48,28 +48,28 @@ public class simulationOutput
 	 */
 	public simulationOutput(simulationOutput output)
 	{
-		this.samplesOfInfectedNodesAtEachTime = output.samplesOfInfectedNodesAtEachTime;
+		this.samplesOfInfectiousNodesAtEachTime = output.samplesOfInfectiousNodesAtEachTime;
 		this.simulationWallTime = output.simulationWallTime;
 	}
 	
 	/**
 	 * Getter.
 	 *
-	 * @return {@link simulationOutput#getSamplesOfInfectedNodesAtEachTime()}.
+	 * @return {@link simulationOutput#getSamplesOfInfectiousNodesAtEachTime()}.
 	 */
-	public List<Map<Integer, Set<Integer>>> getSamplesOfInfectedNodesAtEachTime()
+	public List<Map<Integer, Set<Integer>>> getSamplesOfInfectiousNodesAtEachTime()
 	{
-		return samplesOfInfectedNodesAtEachTime;
+		return samplesOfInfectiousNodesAtEachTime;
 	}
 	
 	/**
 	 * Setter.
 	 *
-	 * @param samplesOfInfectedNodesAtEachTime sample paths.
+	 * @param samplesOfInfectiousNodesAtEachTime sample paths.
 	 */
-	public void setSamplesOfInfectedNodesAtEachTime(List<Map<Integer, Set<Integer>>> samplesOfInfectedNodesAtEachTime)
+	public void setSamplesOfInfectiousNodesAtEachTime(List<Map<Integer, Set<Integer>>> samplesOfInfectiousNodesAtEachTime)
 	{
-		this.samplesOfInfectedNodesAtEachTime = samplesOfInfectedNodesAtEachTime;
+		this.samplesOfInfectiousNodesAtEachTime = samplesOfInfectiousNodesAtEachTime;
 	}
 	
 	/**
@@ -101,7 +101,7 @@ public class simulationOutput
 	public String toString()
 	{
 		return "Simulation output: "
-				+"sample paths: "+this.samplesOfInfectedNodesAtEachTime+"; "
+				+"samples of infectious nodes: "+this.samplesOfInfectiousNodesAtEachTime +"; "
 				+"simulation wall time = "+this.simulationWallTime+".";
 	}
 	
@@ -122,7 +122,7 @@ public class simulationOutput
 		if (o == null || getClass() != o.getClass()) return false;
 		simulationOutput that = (simulationOutput) o;
 		return Double.compare(that.simulationWallTime, simulationWallTime) == 0 &&
-				Objects.equals(samplesOfInfectedNodesAtEachTime, that.samplesOfInfectedNodesAtEachTime);
+				Objects.equals(samplesOfInfectiousNodesAtEachTime, that.samplesOfInfectiousNodesAtEachTime);
 	}
 	
 	/**
@@ -133,6 +133,6 @@ public class simulationOutput
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(samplesOfInfectedNodesAtEachTime, simulationWallTime);
+		return Objects.hash(samplesOfInfectiousNodesAtEachTime, simulationWallTime);
 	}
 }
