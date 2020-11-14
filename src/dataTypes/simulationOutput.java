@@ -1,19 +1,14 @@
 package dataTypes;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
  * Represents simulation output.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: November 12, 2020.
+ * Last Updated: November 14, 2020.
  */
-public class simulationOutput implements Serializable
+public class simulationOutput
 {
-	/**
-	 * A version (long) number associated with each serializable class.
-	 */
-	private static final long serialVersionUID = -3581844084604850694L;
 	/**
 	 * Each element in the list is a sample path.
 	 * Each sample path maps time to set of infected nodes by that time.
