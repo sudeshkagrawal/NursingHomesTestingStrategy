@@ -3,15 +3,12 @@ package simulation;
 import dataTypes.simulationOutput;
 import dataTypes.simulationParameters;
 import network.graph;
-import org.jgrapht.alg.util.Pair;
 
-import java.io.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Represents results of simulation runs.
@@ -99,7 +96,6 @@ public class simulationRuns
 			}
 			int timeStep = param.getTimeStep();
 			int reps = param.getNumberOfSimulationRepetitions();
-			double fnrate = param.getFalseNegativeProbability();
 			double transmissability = param.getTransmissability();
 			int latency = param.getLatency();
 			double externalInfectionRate = param.getExternalInfectionProbability();
