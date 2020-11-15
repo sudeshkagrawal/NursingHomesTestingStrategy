@@ -76,7 +76,7 @@ public class statisticalOutput
 	{
 		this.mean = output.mean;
 		this.stDev = output.stDev;
-		this.alpha = alpha;
+		this.alpha = output.alpha;
 		this.nameOfStatisticalTest = output.nameOfStatisticalTest;
 		this.CIWidth = output.CIWidth;
 		this.sampleSize = output.sampleSize;
