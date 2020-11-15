@@ -10,3 +10,5 @@
 /out/test/NursingHomesTestingStrategy/helper/*.class
 /out/production/NursingHomesTestingStrategy/dataTypes/*.class
 /out/production/NursingHomesTestingStrategy/simulation/*.class
+/out/production/NursingHomesTestingStrategy/analysis/*.class
+/out/production/NursingHomesTestingStrategy/*.ser
