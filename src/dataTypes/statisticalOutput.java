@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Represents output (mean, CI width, etc.) of a statistical analysis.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: November 14, 2020.
+ * Last Updated: November 16, 2020.
  */
 public class statisticalOutput
 {
@@ -236,7 +236,7 @@ public class statisticalOutput
 				+"sample size = "+this.sampleSize+"; "
 				+"mean = "+this.mean+"; "
 				+"std. dev. = "+this.stDev+"; "
-				+"CI width (alpha = "+this.alpha+"; "+this.nameOfStatisticalTest+" test ) = "+this.CIWidth+".";
+				+"CI width (alpha = "+this.alpha+"; "+this.nameOfStatisticalTest+" ) = "+this.CIWidth+".";
 	}
 	
 	/**
