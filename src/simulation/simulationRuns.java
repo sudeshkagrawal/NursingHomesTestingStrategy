@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 /**
  * Represents results of simulation runs.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: November 14, 2020.
+ * Last Updated: November 16, 2020.
  */
 public class simulationRuns
 {
@@ -56,7 +56,7 @@ public class simulationRuns
 	 * Simulates infectious nodes at each time in a sample path.
 	 * The initial infection is conditional binomial.
 	 *
-	 * @param g network graph
+	 * @param originalGraph network graph
 	 * @param listOfParams list of simulation parameters
 	 * @param baseSeed an integer array of length 4 to act as a base seed for random number generation;
 	 *                 actual seed is sum of base seed and hashcode of the parameters in {@code listOfParams};
@@ -68,10 +68,11 @@ public class simulationRuns
 	 * @throws Exception thrown if minimum node label in the graph {@code g} is less than 2;
 	 *                      or if the length of {@code baseSeed} is not 4.
 	 */
-	public void simulationForConditionalProbabilityWithLatency(graph g,
+	public void simulationForConditionalProbabilityWithLatency(graph originalGraph,
 	                                                           List<simulationParameters> listOfParams,
 	                                                           int[] baseSeed) throws Exception
 	{
+		graph g = new graph(originalGraph.getG(), originalGraph.getNetworkName(), false);
 		int s = g.getVertexSet().size();
 		// check graph node labels >=2
 		int minNodeLabel = g.getMinimumNodeLabel();
