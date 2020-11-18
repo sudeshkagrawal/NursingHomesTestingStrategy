@@ -12,3 +12,4 @@
 /out/production/NursingHomesTestingStrategy/simulation/*.class
 /out/production/NursingHomesTestingStrategy/analysis/*.class
 /out/production/NursingHomesTestingStrategy/*.ser
+/out/production/NursingHomesTestingStrategy/*.csv
