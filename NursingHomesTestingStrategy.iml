@@ -45,5 +45,6 @@
     </orderEntry>
     <orderEntry type="library" name="org.jetbrains:annotations:20.1.0" level="project" />
     <orderEntry type="library" name="org.apache.commons:commons-math3:3.2" level="project" />
+    <orderEntry type="library" name="com.opencsv:opencsv:5.3" level="project" />
   </component>
 </module>
