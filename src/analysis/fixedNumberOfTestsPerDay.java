@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 /**
  * Contains methods for fixed number of tests per day testing strategy.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: November 17, 2020.
+ * Last Updated: November 18, 2020.
  */
 public class fixedNumberOfTestsPerDay
 {
@@ -78,10 +78,22 @@ public class fixedNumberOfTestsPerDay
 		return randomTestingOrder;
 	}
 	
-	public void test(graph g, simulationRuns simulationResults, int k, double fnRate, double alpha, int baseSeed)
+	/**
+	 * Finds detection probability for a sequential circular testing order.
+	 *
+	 * @param g network graph
+	 * @param simulationResults simulation results as an instance of {@link simulationRuns}
+	 * @param k number of tests per day
+	 * @param alpha significance level of CI on detection probability
+	 * @param baseSeed base seed for simulating false negative results.
+	 */
+	public void test(graph g, simulationRuns simulationResults, int k, double alpha, int baseSeed)
 	{
 		int s = g.getVertexSet().size();
+		//System.out.println("s="+s);
+		// build the set of test nodes
 		List<Integer> nodeList = new ArrayList<>(g.getVertexSet());
+		Collections.sort(nodeList);
 		
 		NormalDistribution mynormdist = new NormalDistribution(0, 1);
 		double zValue = mynormdist.inverseCumulativeProbability(1-0.5*alpha);
@@ -90,27 +102,22 @@ public class fixedNumberOfTestsPerDay
 																simulationResults.getMapParamToSamples().entrySet())
 		{
 			simulationParameters param = result.getKey();
+			if (!param.getNetworkName().equals(g.getNetworkName()))
+			{
+				System.out.println("Network name mismatch in simulation results and graph provided as input, skipping!");
+			}
+			int timeStep = param.getTimeStep();
+			double fnRate = param.getFalseNegativeProbability();
 			int paramHashCode = param.hashCode();
 			SplittableRandom reliabilityGen = new SplittableRandom(baseSeed+paramHashCode+k);
 			
 			System.out.println("Disease testing for \n\t"+param.toString()+"\n\t and k="+k);
 			List<Map<Integer, Set<Integer>>> samples = result.getValue().getSamplesOfInfectiousNodesAtEachTime();
 			
-			// check k<max_k
-			int timeStep = param.getTimeStep();
-			int maxValueOfK = (int) Math.floor(1.0*s/timeStep); // max tests per day
-			//System.out.println("\t s="+s);
-			//System.out.println("\t Max allowed value of k="+maxValueOfK);
-			if (k>maxValueOfK)
-			{
-				System.out.println("\t Maximum value of tests per day is "+maxValueOfK+"; skipping "+param.toString());
-				continue;
-			}
-			// build the set of test nodes
 			Map<Integer, Set<Integer>> testNodes = getTestNodes(k, nodeList, timeStep);
 			//System.out.println("\t Test Schedule each day:\n\t\t"+testNodes.toString());
 			// disease testing
-			int count = 0;
+			int countDetectedSamples = 0;
 			for (Map<Integer, Set<Integer>> sample: samples)
 			{
 				//System.out.println("\t Sample:\n\t\t"+sample.toString());
@@ -133,13 +140,13 @@ public class fixedNumberOfTestsPerDay
 					//System.out.println("\t\t\t Detected nodes at t="+t+": "+detectedNodes.toString());
 					if (detectedNodes.size()>0)
 					{
-						count++;
+						countDetectedSamples++;
 						break;
 					}
 				}
 			}
 			int sampleSize = samples.size();
-			double probability = 1.0*count/sampleSize;
+			double probability = 1.0* countDetectedSamples /sampleSize;
 			double standardError = Math.sqrt(probability*(1.0-probability)/sampleSize);
 			String nameOfStatisticalTest = "normal approximation for binomial proportion";
 			double CIWidth = 2*zValue*standardError;
@@ -160,17 +167,18 @@ public class fixedNumberOfTestsPerDay
 	 * @param k number of tests per day
 	 * @param nodeList list of nodes to be tested
 	 * @param timeStep number of days for which test nodes are needed.
-	 * @return
+	 * @return nodes to be tested at each time.
 	 */
 	@org.jetbrains.annotations.NotNull
 	private Map<Integer, Set<Integer>> getTestNodes(int k, List<Integer> nodeList, int timeStep)
 	{
 		Map<Integer, Set<Integer>> testNodes = new LinkedHashMap<>();
+		int size = nodeList.size();
 		for (int t = 1; t<= timeStep; t++)
 		{
 			testNodes.put(t, new HashSet<>());
-			for (int j = k *(t-1); j< k *t; j++)
-				testNodes.get(t).add(nodeList.get(j));
+			for (int j = k*(t-1); j< k*t; j++)
+				testNodes.get(t).add(nodeList.get(j%size));
 		}
 		return testNodes;
 	}
@@ -183,7 +191,7 @@ public class fixedNumberOfTestsPerDay
 	 * @param nodeList list of nodes to be tested
 	 * @param timeStep number of days for which test nodes are needed
 	 * @param randomOrderGen an instance of {@link java.util.Random} for generating random order of test nodes.
-	 * @return
+	 * @return nodes to be tested at each time.
 	 */
 	@org.jetbrains.annotations.NotNull
 	private Map<Integer, Set<Integer>> getTestNodes(int k, List<Integer> nodeList, int timeStep,
@@ -194,11 +202,23 @@ public class fixedNumberOfTestsPerDay
 		return getTestNodes(k, newNodeList, timeStep);
 	}
 	
-	public void testWithRandomOrder(graph g, simulationRuns simulationResults, int k, double fnRate, double alpha,
+	/**
+	 * Finds detection probability for a sequential circular testing order.
+	 *
+	 * @param g network graph
+	 * @param simulationResults simulation results as an instance of {@link simulationRuns}
+	 * @param k number of tests per day
+	 * @param alpha significance level of CI on detection probability
+	 * @param baseSeed base seed for simulating false negative results
+	 * @param randomOrderBaseSeed base seed for generating random testing order.
+	 */
+	public void testWithRandomOrder(graph g, simulationRuns simulationResults, int k, double alpha,
 	                                int baseSeed, int randomOrderBaseSeed)
 	{
 		int s = g.getVertexSet().size();
+		//System.out.println("s="+s);
 		List<Integer> nodeList = new ArrayList<>(g.getVertexSet());
+		Collections.sort(nodeList);
 		
 		NormalDistribution mynormdist = new NormalDistribution(0, 1);
 		double zValue = mynormdist.inverseCumulativeProbability(1-0.5*alpha);
@@ -207,6 +227,12 @@ public class fixedNumberOfTestsPerDay
 																simulationResults.getMapParamToSamples().entrySet())
 		{
 			simulationParameters param = result.getKey();
+			if (!param.getNetworkName().equals(g.getNetworkName()))
+			{
+				System.out.println("Network name mismatch in simulation results and graph provided as input, skipping!");
+			}
+			int timeStep = param.getTimeStep();
+			double fnRate = param.getFalseNegativeProbability();
 			int paramHashCode = param.hashCode();
 			SplittableRandom reliabilityGen = new SplittableRandom(baseSeed+paramHashCode+k);
 			Random randomOrderGen = new Random(randomOrderBaseSeed +paramHashCode+k);
@@ -214,21 +240,11 @@ public class fixedNumberOfTestsPerDay
 			System.out.println("Disease testing with RANDOM ORDER for \n\t"+param.toString()+"\n\t and k="+k);
 			List<Map<Integer, Set<Integer>>> samples = result.getValue().getSamplesOfInfectiousNodesAtEachTime();
 			
-			// check k<max_k
-			int timeStep = param.getTimeStep();
-			int maxValueOfK = (int) Math.floor(1.0*s/timeStep); // max tests per day
-			//System.out.println("\t s="+s);
-			//System.out.println("\t Max allowed value of k="+maxValueOfK);
-			if (k>maxValueOfK)
-			{
-				System.out.println("\t Maximum value of tests per day is "+maxValueOfK+"; skipping "+param.toString());
-				continue;
-			}
 			// build the set of test nodes
 			Map<Integer, Set<Integer>> testNodes = getTestNodes(k, nodeList, timeStep, randomOrderGen);
 			//System.out.println("\t Test Schedule each day:\n\t\t"+testNodes.toString());
 			// disease testing
-			int count = 0;
+			int countDetectedSamples = 0;
 			for (Map<Integer, Set<Integer>> sample: samples)
 			{
 				//System.out.println("\t Sample:\n\t\t"+sample.toString());
@@ -251,13 +267,13 @@ public class fixedNumberOfTestsPerDay
 					//System.out.println("\t\t\t Detected nodes at t="+t+": "+detectedNodes.toString());
 					if (detectedNodes.size()>0)
 					{
-						count++;
+						countDetectedSamples++;
 						break;
 					}
 				}
 			}
 			int sampleSize = samples.size();
-			double probability = 1.0*count/sampleSize;
+			double probability = 1.0* countDetectedSamples /sampleSize;
 			double standardError = Math.sqrt(probability*(1.0-probability)/sampleSize);
 			String nameOfStatisticalTest = "normal approximation for binomial proportion";
 			double CIWidth = 2*zValue*standardError;

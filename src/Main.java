@@ -19,10 +19,10 @@ public class Main
 		
 		// simulation
 		int reps = 50000;
-		int timeStep = 3;
-		double falseNegProb = 0.3;
+		int timeStep = 6;
+		double falseNegProb = 0.21;
 		double transmissability = 0.05;
-		int latency = 1;
+		int latency = 3;
 		double externalInfectionProb = 0.0001;
 		int[] seed = {2507, 2507, 2101, 1308};
 		List<simulationParameters> listOfParams = new ArrayList<>();
@@ -37,15 +37,14 @@ public class Main
 		String nursingTestResultsFile = outputFolder + "nursingtestresults.csv";
 		boolean append = true;
 		//int[] k = {3};
-		int k_max = (int) Math.floor(s/timeStep);
-		double r = 0.3;
 		double alpha = 0.05;
 		int baseSeed = 3567;
 		int randomOrderBaseSeed = 1118;
 		fixedNumberOfTestsPerDay testResults = new fixedNumberOfTestsPerDay();
-		for (int i=1; i<=k_max; i++)
+		for (int i=1; i<=50; i++)
 		{
-			testResults.testWithRandomOrder(network, simulationResults, i, r, alpha, baseSeed, randomOrderBaseSeed);
+			//testResults.testWithRandomOrder(network, simulationResults, i, r, alpha, baseSeed, randomOrderBaseSeed);
+			testResults.test(network, simulationResults, i, alpha, baseSeed);
 		}
 		//System.out.println(testResults.toString());
 		testResults.writeToCSV(nursingTestResultsFile, append);
