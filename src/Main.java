@@ -34,13 +34,20 @@ public class Main
 		
 		
 		// disease testing
-		int[] k = {33};
-		double r = 0.2;
+		String nursingTestResultsFile = outputFolder + "nursingtestresults.csv";
+		boolean append = true;
+		//int[] k = {3};
+		int k_max = (int) Math.floor(s/timeStep);
+		double r = 0.3;
+		double alpha = 0.05;
 		int baseSeed = 3567;
-		for (int i=0; i<k.length; i++)
+		int randomOrderBaseSeed = 1118;
+		fixedNumberOfTestsPerDay testResults = new fixedNumberOfTestsPerDay();
+		for (int i=1; i<=k_max; i++)
 		{
-			fixedNumberOfTestsPerDay testResults = new fixedNumberOfTestsPerDay();
-			testResults.test(network, simulationResults, k[i], r, baseSeed);
+			testResults.testWithRandomOrder(network, simulationResults, i, r, alpha, baseSeed, randomOrderBaseSeed);
 		}
+		//System.out.println(testResults.toString());
+		testResults.writeToCSV(nursingTestResultsFile, append);
 	}
 }
