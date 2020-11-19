@@ -4,6 +4,7 @@ import network.graph;
 import simulation.simulationRuns;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main
@@ -13,9 +14,30 @@ public class Main
 		String outputFolder = "./out/production/NursingHomesTestingStrategy/";
 		// create nursing network
 		int s = 100;
-		String networkName = "completegraph_staff"+s;
+		
+//		// complete graph
+//		String networkName = "completegraph_staff"+s;
+//		String graphOutputFile = outputFolder + "completegraph_staff"+s+"_graph.txt";
+//		graph network = new graph(networkName);
+//		network.initializeAsCompleteGraph(s, 2);
+//		network.writeNetworkToFile(graphOutputFile, true);
+		
+		// neighboring graph
+		int degree = 20;
+		String networkName = "neighboringgraph_staff"+s+"_degree"+degree;
+		String graphOutputFile = outputFolder + "neighboringgraph_staff"+s+"_degree"+degree+"_graph.txt";
 		graph network = new graph(networkName);
-		network.initializeAsCompleteGraph(s, 2);
+		int m = (int) (0.5*degree);
+		int[] offsets = new int[m];
+		for (int i=0; i<offsets.length; i++)
+			offsets[i] = i+1;
+		network.initializeAsCirculantGraph(s, offsets,2);
+		network.writeNetworkToFile(graphOutputFile, true);
+		
+//		// crossing graph
+//		String networkName = "crossinggraph_staff"+s;
+//		graph network = new graph(networkName);
+//		network.initializeAsCompleteGraph(s, 2);
 		
 		// simulation
 		int reps = 50000;
@@ -31,10 +53,10 @@ public class Main
 		listOfParams.add(p1);
 		simulationRuns simulationResults = new simulationRuns();
 		simulationResults.simulationForConditionalProbabilityWithLatency(network, listOfParams, seed);
-		
-		
+
+
 		// disease testing
-		String nursingTestResultsFile = outputFolder + "nursingtestresults.csv";
+		String nursingTestResultsFile = outputFolder + "nursingtestresults_"+ networkName + "_reps" + reps + ".csv";
 		boolean append = true;
 		//int[] k = {3};
 		double alpha = 0.05;

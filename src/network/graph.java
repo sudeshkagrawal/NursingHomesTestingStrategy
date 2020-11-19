@@ -10,6 +10,8 @@ import org.jgrapht.util.SupplierUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a network graph.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: November 3, 2020.
+ * Last Updated: November 18, 2020.
  */
 public class graph
 {
@@ -80,6 +82,42 @@ public class graph
 				this.g.addEdge(g.getEdgeSource(edge), g.getEdgeTarget(edge));
 		}
 		this.networkName = networkName;
+	}
+	
+	/**
+	 * Writes network to a file.
+	 *
+	 * @param filePath path of the file to output to
+	 * @param forwardStarRepresentation {@code true}, if file to be outputted in forward star representation.
+	 */
+	public void writeNetworkToFile(String filePath, boolean forwardStarRepresentation)
+	{
+		try
+		{
+			FileWriter fileWriter = new FileWriter(filePath);
+			List<Integer> nodeList = new ArrayList<>(this.getVertexSet());
+			Collections.sort(nodeList);
+			for (Integer node: nodeList)
+			{
+				List<Integer> neighbors = this.getNeighborsOfNode(node);
+				Collections.sort(neighbors);
+				if (forwardStarRepresentation)
+				{
+					fileWriter.write(String.format("%d --> %s\n", node, neighbors.toString()));
+				}
+				else
+				{
+					for (Integer targetNode: neighbors)
+						fileWriter.write(String.format("%d,%d\n", node, targetNode));
+				}
+			}
+			fileWriter.close();
+		}
+		catch (IOException e)
+		{
+			System.out.println("An error occurred when trying to write to "+filePath+".");
+			e.printStackTrace();
+		}
 	}
 	
 	/**
