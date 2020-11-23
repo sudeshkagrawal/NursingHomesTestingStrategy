@@ -426,8 +426,8 @@ public class fixedNumberOfTestsPerDay
 			double width = e.getValue().getCIWidth();
 			double halfwidth = 0.5*width;
 			line[10] = String.valueOf(width);
-			line[11] = String.valueOf(Math.min(0, prob-halfwidth));
-			line[12] = String.valueOf(Math.max(prob+halfwidth, 1));
+			line[11] = String.valueOf(Math.max(0, prob-halfwidth));
+			line[12] = String.valueOf(Math.min(prob+halfwidth, 1));
 			line[13] = e.getValue().getNameOfStatisticalTest();
 			line[14] = String.valueOf(e.getValue().getBatchSize());
 			line[15] = String.valueOf(e.getValue().getAlpha());
