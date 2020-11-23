@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Represents output (mean, CI width, etc.) of a statistical analysis.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: November 16, 2020.
+ * Last Updated: November 23, 2020.
  */
 public class statisticalOutput
 {
@@ -40,9 +40,9 @@ public class statisticalOutput
 	int sampleSize;
 	
 	/**
-	 * Replication size.
+	 * Batch size.
 	 */
-	int replicationSize;
+	int batchSize;
 	
 	/**
 	 * Constructor.
@@ -53,10 +53,10 @@ public class statisticalOutput
 	 * @param nameOfStatisticalTest statistial test used to generate CIs
 	 * @param CIWidth width of confidence interval
 	 * @param sampleSize sample size
-	 * @param replicationSize replication size.
+	 * @param batchSize batch size.
 	 */
 	public statisticalOutput(double mean, double stDev, double alpha, String nameOfStatisticalTest, double CIWidth,
-	                         int sampleSize, int replicationSize)
+	                         int sampleSize, int batchSize)
 	{
 		this.mean = mean;
 		this.stDev = stDev;
@@ -64,7 +64,7 @@ public class statisticalOutput
 		this.nameOfStatisticalTest = nameOfStatisticalTest;
 		this.CIWidth = CIWidth;
 		this.sampleSize = sampleSize;
-		this.replicationSize = replicationSize;
+		this.batchSize = batchSize;
 	}
 	
 	/**
@@ -80,7 +80,7 @@ public class statisticalOutput
 		this.nameOfStatisticalTest = output.nameOfStatisticalTest;
 		this.CIWidth = output.CIWidth;
 		this.sampleSize = output.sampleSize;
-		this.replicationSize = output.replicationSize;
+		this.batchSize = output.batchSize;
 	}
 	
 	/**
@@ -206,21 +206,21 @@ public class statisticalOutput
 	/**
 	 * Getter.
 	 *
-	 * @return {@link statisticalOutput#replicationSize}.
+	 * @return {@link statisticalOutput#batchSize}.
 	 */
-	public int getReplicationSize()
+	public int getBatchSize()
 	{
-		return replicationSize;
+		return batchSize;
 	}
 	
 	/**
 	 * Setter.
 	 *
-	 * @param replicationSize replication size.
+	 * @param batchSize batch size.
 	 */
-	public void setReplicationSize(int replicationSize)
+	public void setBatchSize(int batchSize)
 	{
-		this.replicationSize = replicationSize;
+		this.batchSize = batchSize;
 	}
 	
 	/**
@@ -232,7 +232,7 @@ public class statisticalOutput
 	public String toString()
 	{
 		return "Statistical output: "
-				+"replication size = "+this.replicationSize+"; "
+				+"Batch size = "+this.batchSize +"; "
 				+"sample size = "+this.sampleSize+"; "
 				+"mean = "+this.mean+"; "
 				+"std. dev. = "+this.stDev+"; "
@@ -258,7 +258,7 @@ public class statisticalOutput
 				Double.compare(output.alpha, alpha) == 0 &&
 				Double.compare(output.CIWidth, CIWidth) == 0 &&
 				sampleSize == output.sampleSize &&
-				replicationSize == output.replicationSize &&
+				batchSize == output.batchSize &&
 				Objects.equals(nameOfStatisticalTest, output.nameOfStatisticalTest);
 	}
 	
@@ -270,6 +270,6 @@ public class statisticalOutput
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(mean, stDev, alpha, nameOfStatisticalTest, CIWidth, sampleSize, replicationSize);
+		return Objects.hash(mean, stDev, alpha, nameOfStatisticalTest, CIWidth, sampleSize, batchSize);
 	}
 }
