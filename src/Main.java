@@ -15,24 +15,24 @@ public class Main
 		// create nursing network
 		int s = 100;
 		
-		// complete graph
-		String networkName = "completegraph_staff"+s;
-		String graphOutputFile = outputFolder + "completegraph_staff"+s+"_graph.txt";
-		graph network = new graph(networkName);
-		network.initializeAsCompleteGraph(s, 2);
-		network.writeNetworkToFile(graphOutputFile, false);
-		
-//		// neighboring graph
-//		int degree = 20;
-//		String networkName = "neighboringgraph_staff"+s+"_degree"+degree;
-//		String graphOutputFile = outputFolder + "neighboringgraph_staff"+s+"_degree"+degree+"_graph.txt";
+//		// complete graph
+//		String networkName = "completegraph_staff"+s;
+//		String graphOutputFile = outputFolder + "completegraph_staff"+s+"_graph.txt";
 //		graph network = new graph(networkName);
-//		int m = (int) (0.5*degree);
-//		int[] offsets = new int[m];
-//		for (int i=0; i<offsets.length; i++)
-//			offsets[i] = i+1;
-//		network.initializeAsCirculantGraph(s, offsets,2);
+//		network.initializeAsCompleteGraph(s, 2);
 //		network.writeNetworkToFile(graphOutputFile, false);
+		
+		// neighboring graph
+		int degree = 20;
+		String networkName = "neighboringgraph_staff"+s+"_degree"+degree;
+		String graphOutputFile = outputFolder + "neighboringgraph_staff"+s+"_degree"+degree+"_graph.txt";
+		graph network = new graph(networkName);
+		int m = (int) (0.5*degree);
+		int[] offsets = new int[m];
+		for (int i=0; i<offsets.length; i++)
+			offsets[i] = i+1;
+		network.initializeAsCirculantGraph(s, offsets,2);
+		//network.writeNetworkToFile(graphOutputFile, false);
 		
 //		// crossing graph
 //		int degree = 20;
@@ -55,7 +55,7 @@ public class Main
 		int latency = 3;
 		double externalInfectionProb = 0.0001;
 		int[] simulationBaseSeeds = {2507, 2507, 2101, 1308};
-		int numberOfBatches = 2;
+		int numberOfBatches = 30;
 		List<simulationParameters> listOfParams = new ArrayList<>();
 		simulationParameters p1 = new simulationParameters(networkName, timeStep,
 				reps, falseNegProb, transmissability, latency, externalInfectionProb);
@@ -72,14 +72,16 @@ public class Main
 		}
 		
 		// disease testing
-		String nursingTestResultsFile = outputFolder + "nursingtestresults_"+ networkName + "_reps" + reps + ".csv";
 		String testingOrder = "random";
+		String nursingTestResultsFile = outputFolder + "nursingtestresults_"+ networkName + "_" + testingOrder
+										+ "_reps" + reps + ".csv";
+		
 		//int[] k = {3};
 		double alpha = 0.05;
 		int testReliabilityBaseSeed = 3567;
 		int randomOrderBaseSeed = 1118;
 		fixedNumberOfTestsPerDay testResults = new fixedNumberOfTestsPerDay();
-		for (int i=1; i<=5; i++)
+		for (int i=1; i<=50; i++)
 		{
 			//testResults.testWithRandomOrder(network, simulationResults, i, r, alpha, baseSeed, randomOrderBaseSeed);
 			testResults.test(network, simulationResultsOfBatches, i, alpha, testingOrder,

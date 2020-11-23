@@ -155,7 +155,7 @@ public class fixedNumberOfTestsPerDay
 			
 			for (int i=0; i<simulationResultsOfBatches.length; i++)
 			{
-				System.out.println("\t BATCH "+(i+1));
+				//System.out.println("\t BATCH "+(i+1));
 				SplittableRandom reliabilityGen = new SplittableRandom(testReliabilityBaseSeed+paramHashCode+k+i);
 				List<Map<Integer, Set<Integer>>> samples =
 														simulationResultsOfBatches[i].getMapParamToSamples().get(param)
@@ -273,7 +273,7 @@ public class fixedNumberOfTestsPerDay
 			
 			for (int i=0; i<simulationResultsOfBatches.length; i++)
 			{
-				System.out.println("\t BATCH "+(i+1));
+				//System.out.println("\t BATCH "+(i+1));
 				SplittableRandom reliabilityGen = new SplittableRandom(testReliabilityBaseSeed+paramHashCode+k+i);
 				Random randomOrderGen = new Random(randomOrderBaseSeed +paramHashCode+k+i);
 				List<Map<Integer, Set<Integer>>> samples =
