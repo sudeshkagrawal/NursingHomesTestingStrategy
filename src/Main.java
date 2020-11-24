@@ -15,27 +15,27 @@ public class Main
 		// create nursing network
 		int s = 100;
 		
-		// complete graph
-		String networkName = "completegraph_staff"+s;
-		String graphOutputFile = outputFolder + "completegraph_staff"+s+"_graph.txt";
-		graph network = new graph(networkName);
-		network.initializeAsCompleteGraph(s, 2);
-		//network.writeNetworkToFile(graphOutputFile, false);
-		
-//		// neighboring graph
-//		int degree = 99;
-//		String networkName = "neighboringgraph_staff"+s+"_degree"+degree;
-//		String graphOutputFile = outputFolder + "neighboringgraph_staff"+s+"_degree"+degree+"_graph.txt";
+//		// complete graph
+//		String networkName = "completegraph_staff"+s;
+//		String graphOutputFile = outputFolder + "completegraph_staff"+s+"_graph.txt";
 //		graph network = new graph(networkName);
-//		int m = (int) (0.5*degree);
-//		int[] offsets = new int[m];
-//		for (int i=0; i<offsets.length; i++)
-//			offsets[i] = i+1;
-//		network.initializeAsCirculantGraph(s, offsets,2);
+//		network.initializeAsCompleteGraph(s, 2);
 //		//network.writeNetworkToFile(graphOutputFile, false);
 		
+		// neighboring graph
+		int degree = 60;
+		String networkName = "neighboringgraph_staff"+s+"_degree"+degree;
+		String graphOutputFile = outputFolder + "neighboringgraph_staff"+s+"_degree"+degree+"_graph.txt";
+		graph network = new graph(networkName);
+		int m = (int) (0.5*degree);
+		int[] offsets = new int[m];
+		for (int i=0; i<offsets.length; i++)
+			offsets[i] = i+1;
+		network.initializeAsCirculantGraph(s, offsets,2);
+		//network.writeNetworkToFile(graphOutputFile, false);
+		
 //		// crossing graph
-//		int degree = 20;
+//		int degree = 60;
 //		String networkName = "crossinggraph_staff"+s+"_degree"+degree;
 //		String graphOutputFile = outputFolder + "crossinggraph_staff"+s+"_degree"+degree+"_graph.txt";
 //		graph network = new graph(networkName);
@@ -45,7 +45,7 @@ public class Main
 //		for (int i=m-1; i>=0; i--)
 //			offsets[i] = constant-i;
 //		network.initializeAsCirculantGraph(s, offsets, 2);
-//		network.writeNetworkToFile(graphOutputFile, true);
+//		//network.writeNetworkToFile(graphOutputFile, true);
 		
 		// simulation
 		int reps = 100000;
@@ -53,7 +53,7 @@ public class Main
 		double falseNegProb = 0.21;
 		double transmissability = 0.05;
 		int latency = 3;
-		double externalInfectionProb = 0.0001;
+		double externalInfectionProb = 0.01;
 		int[] simulationBaseSeeds = {2507, 2507, 2101, 1308};
 		int numberOfBatches = 1;
 		List<simulationParameters> listOfParams = new ArrayList<>();
@@ -72,9 +72,10 @@ public class Main
 		}
 		
 		// disease testing
-		String testingOrder = "circular";
-		String nursingTestResultsFile = outputFolder + "nursingtestresults_"+ networkName
-										+ "_reps" + reps + "_" + testingOrder + "batch" + numberOfBatches + ".csv";
+		String testingOrder = "random";
+		String nursingTestResultsFile = outputFolder + "nursingtestresults_"+ networkName + "_reps" + reps
+				+ "_pext" + (100*externalInfectionProb) + "_t" + timeStep + "_" + testingOrder + "batch"
+				+ numberOfBatches + ".csv";
 		
 		//int[] k = {3};
 		double alpha = 0.05;

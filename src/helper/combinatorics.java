@@ -6,7 +6,7 @@ import java.util.*;
 /**
  * Contains methods for some combinatorial operations.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: November 3, 2020.
+ * Last Updated: November 23, 2020.
  */
 public class combinatorics
 {
@@ -46,9 +46,8 @@ public class combinatorics
 	 * @param stateSpace an array representing the state space of the probability distribution
 	 * @param pmf an array representing the probability mass function corresponding to elements in {@code stateSpace}.
 	 * @return an integer array of choices corresponding to elements in {@code randomchoices}.
-	 * @throws Exception thrown if elements of pmf do not sum up to 1.
 	 */
-	public static int[] discreteProbabilityChoice(double[] randomChoices, int[] stateSpace, double[] pmf) throws Exception
+	public static int[] discreteProbabilityChoice(double[] randomChoices, int[] stateSpace, double[] pmf)
 	{
 		double[] cdf = new double[pmf.length];
 		int[] binomialChoices = new int[randomChoices.length];
@@ -58,8 +57,10 @@ public class combinatorics
 			sum += pmf[i];
 			cdf[i] = sum;
 		}
+//		if (Math.abs(cdf[pmf.length-1]-1)>0.0000001)
+//			throw new Exception("'pmf' is not a probability mass function!");
 		if (Math.abs(cdf[pmf.length-1]-1)>0.0000001)
-			throw new Exception("'pmf' is not a probability mass function!");
+			System.out.println("WARNING: 'pmf' might not be a probability mass function!");
 		
 		for (int i=0; i<randomChoices.length; i++)
 			if (randomChoices[i]<=cdf[0])
