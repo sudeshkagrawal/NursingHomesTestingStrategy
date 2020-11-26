@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 /**
  * Represents results of simulation runs.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: November 16, 2020.
+ * Last Updated: November 26, 2020.
  */
 public class simulationRuns
 {
