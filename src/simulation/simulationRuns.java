@@ -114,9 +114,13 @@ public class simulationRuns
 			double[] conditionalProb = new double[s];
 			for (int k=1; k<=s; k++)
 			{
-				conditionalProb[k-1] = factor*Math.pow(externalInfectionRate, k)*Math.pow(q, s-k)
-						*helper.combinatorics.nChoosek(s, k);
+				//System.out.println(s+" choose "+k+" is "+helper.combinatorics.nChoosek(s, k));
+				conditionalProb[k-1] = helper.combinatorics.nChoosek(s, k)
+										*(Math.pow(externalInfectionRate, k)*Math.pow(q, s-k))*factor;
+				//System.out.println("Cond. prob. for k="+k+" is "+conditionalProb[k-1]);
 			}
+			//Arrays.stream(conditionalProb).forEach(e -> System.out.print(e+", "));
+			//System.out.println();
 			
 			// Generate number of initial infections (at t=1) for each run using truncated binomial
 			double[] binomialGenChoice = IntStream.range(0, reps).mapToDouble(x -> binomialGen.nextDouble()).toArray();
@@ -125,6 +129,8 @@ public class simulationRuns
 				stateSpace[i-1] = i;
 			int[] binomialChoices = helper.combinatorics.discreteProbabilityChoice(binomialGenChoice,
 					stateSpace, conditionalProb);
+			//Arrays.stream(binomialChoices).forEach(e -> System.out.print(e+", "));
+			//System.out.println();
 			
 			List<Map<Integer, Set<Integer>>> samplesOfInfectiousNodes = new ArrayList<>();
 			
@@ -159,7 +165,47 @@ public class simulationRuns
 				//System.out.println("\t\t\t Nodes made infectious by super node: "+firstInfectiousNodes);
 				//System.out.println("\t\t\t Infectious nodes at the end of day of t=0: "+infectiousNodes);
 				
-				for (int t=1; t<=timeStep; t++)
+				// TIME 1
+				//System.out.println("\t\t Time 1");
+				samplesOfInfectiousNodes.get(x).put(1, new HashSet<>());
+				samplesOfInfectiousNodes.get(x).get(1).addAll(infectiousNodes);
+				// Iterate through the set of infectious nodes for internal infection
+				for (Integer infectiousNode: infectiousNodes)
+				{
+					if (infectiousNode!= supernode)
+					{
+						// find neighbors of the current infectious nodes which are not already infectious
+						currentNeighbors = g.getNeighborsOfNode(infectiousNode).stream()
+											.filter(e -> !infectiousNodes.contains(e))
+											.collect(Collectors.toList());
+						//System.out.println("\t\t\t Node "+infectiousNode+" can infect uninfectious node(s): "
+						//					+currentNeighbors+"");
+						if (currentNeighbors.size()>0)
+						{
+							tmpInfectedNodes.addAll(currentNeighbors.stream()
+										.filter(currentNeighbor -> transmissabilityGen.nextDouble()<=transmissability)
+										.collect(Collectors.toList()));
+							// remove nodes which are already infectious
+							tmpInfectedNodes.remove(infectiousNode);
+							//System.out.println("\t\t\t Node "+infectiousNode+" infected nodes: "
+							//					+tmpInfectedNodes.toString());
+							
+						}
+						infectedNodes.addAll(tmpInfectedNodes);
+						tmpInfectedNodes.clear();
+					}
+				}
+				// update time since infection
+				for (Integer infectedNode: infectedNodes)
+				{
+					timeSinceInfected.put(infectedNode,
+							timeSinceInfected.getOrDefault(infectedNode, 0)+1);
+				}
+				//System.out.println("\t\t Infected nodes: "+infectedNodes.toString());
+				//System.out.println("\t\t Time since infection: "+timeSinceInfected.toString());
+				//System.out.println("\t\t Infectious nodes: "+infectiousNodes.toString());
+				
+				for (int t=2; t<=timeStep; t++)
 				{
 					//System.out.println("\t\t Time "+t);
 					
@@ -195,6 +241,7 @@ public class simulationRuns
 					tmpInfectiousNodes.clear();
 					samplesOfInfectiousNodes.get(x).put(t, new HashSet<>());
 					samplesOfInfectiousNodes.get(x).get(t).addAll(infectiousNodes);
+					// Iterate through the set of infectious nodes for internal infection
 					for (Integer infectiousNode: infectiousNodes)
 					{
 						if (infectiousNode!= supernode)
