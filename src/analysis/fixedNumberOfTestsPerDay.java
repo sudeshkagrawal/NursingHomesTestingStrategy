@@ -6,6 +6,7 @@ import dataTypes.simulationParameters;
 import dataTypes.statisticalOutput;
 import network.graph;
 import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.util.Pair;
 import simulation.simulationRuns;
 
@@ -20,7 +21,7 @@ import java.util.stream.IntStream;
 /**
  * Contains methods for fixed number of tests per day testing strategy.
  * @author Sudesh Agrawal (sudesh@utexas.edu).
- * Last Updated: November 23, 2020.
+ * Last Updated: December 1, 2020.
  */
 public class fixedNumberOfTestsPerDay
 {
@@ -135,6 +136,8 @@ public class fixedNumberOfTestsPerDay
 		
 		NormalDistribution myNormDist = new NormalDistribution(0, 1);
 		double zValue = myNormDist.inverseCumulativeProbability(1-0.5*alpha);
+		TDistribution myTDist = new TDistribution(numberOfBatches-1);
+		double tValue = myTDist.inverseCumulativeProbability(1-0.5*alpha);
 		
 		List<simulationParameters> listOfParams = new ArrayList<>(simulationResultsOfBatches[0]
 														.getMapParamToSamples().keySet());
@@ -207,10 +210,11 @@ public class fixedNumberOfTestsPerDay
 			}
 			else
 			{
-				nameOfStatisticalTest = "normal population test";
+				nameOfStatisticalTest = "t-test for normal population with unknown variance";
 				double probability = Arrays.stream(probabilities).sum()/numberOfBatches;
-				double standardError = 1.0/Math.sqrt(sampleSizes[0]);
-				double CIWidth = 2*zValue*standardError;
+				double standardDeviation = findStandardDeviation(probabilities, probability);
+				double standardError = standardDeviation/Math.sqrt(sampleSizes[0]);
+				double CIWidth = 2*tValue*standardError;
 				output = new statisticalOutput(probability, standardError, alpha,
 												nameOfStatisticalTest, CIWidth, sampleSizes[0], numberOfBatches);
 			}
@@ -253,6 +257,8 @@ public class fixedNumberOfTestsPerDay
 		
 		NormalDistribution myNormDist = new NormalDistribution(0, 1);
 		double zValue = myNormDist.inverseCumulativeProbability(1-0.5*alpha);
+		TDistribution myTDist = new TDistribution(numberOfBatches-1);
+		double tValue = myTDist.inverseCumulativeProbability(1-0.5*alpha);
 		
 		List<simulationParameters> listOfParams = new ArrayList<>(simulationResultsOfBatches[0]
 				.getMapParamToSamples().keySet());
@@ -326,10 +332,11 @@ public class fixedNumberOfTestsPerDay
 			}
 			else
 			{
-				nameOfStatisticalTest = "normal population test";
+				nameOfStatisticalTest = "t-test for normal population with unknown variance";
 				double probability = Arrays.stream(probabilities).sum()/numberOfBatches;
-				double standardError = 1.0/Math.sqrt(sampleSizes[0]);
-				double CIWidth = 2*zValue*standardError;
+				double standardDeviation = findStandardDeviation(probabilities, probability);
+				double standardError = standardDeviation/Math.sqrt(sampleSizes[0]);
+				double CIWidth = 2*tValue*standardError;
 				output = new statisticalOutput(probability, standardError, alpha,
 						nameOfStatisticalTest, CIWidth, sampleSizes[0], numberOfBatches);
 			}
@@ -381,6 +388,33 @@ public class fixedNumberOfTestsPerDay
 		List<Integer> newNodeList = new ArrayList<>(nodeList);
 		Collections.shuffle(newNodeList, randomOrderGen);
 		return getTestNodes(k, newNodeList, timeStep);
+	}
+	
+	/**
+	 * Finds the sample standard deviation of a sequence of numbers whose mean is provided as input.
+	 *
+	 * @param arr sequence of numbers whose standard deviation is desired
+	 * @param mean mean of the sequence.
+	 * @return sample standard deviation.
+	 */
+	private double findStandardDeviation(double[] arr, double mean)
+	{
+		int n = arr.length;
+		double numerator = Arrays.stream(arr).map(e -> Math.pow(e-mean, 2)).sum();
+		
+		return Math.sqrt((numerator)/(n-1));
+	}
+	
+	/**
+	 * Finds the sample standard deviation of a sequence of numbers.
+	 *
+	 * @param arr sequence of numbers whose standard deviation is desired.
+	 * @return sample standard deviation.
+	 */
+	private double findStandardDeviation(double[] arr)
+	{
+		double mean =  Arrays.stream(arr).sum()/arr.length;
+		return findStandardDeviation(arr, mean);
 	}
 	
 	/**
